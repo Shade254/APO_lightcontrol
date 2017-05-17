@@ -1,10 +1,23 @@
+#define _POSIX_C_SOURCE 200112L
+
+#include <sys/mman.h>
+#include <stdint.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <malloc.h>
+#include <string.h>
+#include <byteswap.h>
+#include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <inttypes.h>
+#include <time.h>
 #include "imgwrite.h"
 #include "font_types.h"
 #include "netcom.h"
 #include "messages.h"
+#include "control.h"
+#include "screen.h"
 
 
 #define DIM_X 480
@@ -17,8 +30,13 @@
 #define TEXT_B 255
 
 int main(){
+	struct timespec loop_delay = {.tv_sec = 0, .tv_nsec = 200 * 1000 * 1000};
 	int socket = initCommunication();
+	unsigned char* lcd_base = initScreen();
+	unsigned char* mem_base = initMemBase();
+	
 	char* address = malloc(16*sizeof(char));
+	char* pom = calloc(10, sizeof(char));
 	Image* img;
 	int line = 0;
 	
@@ -28,21 +46,17 @@ int main(){
 		img = createTextScreen(20, line*20, "[ERROR] Inicialization failed");
 		exit(1);
 	}
-	showScreen("1.ppm", img);
+	
+	repaintScreen(lcd_base, img);
 	line++;
 	
-	void* data = receiveBytes(socket, 548, address);
-	InfoMessage* message = (InfoMessage*)data;
-	printf("GOT message\n");
-	printf("ALC %d\n", message->ALC1);
-	printf("protocol %d\n", message->protocol);
-	printf("type %d\n", message->type);
-	printf("ceiling %d\n", message->ceilingRGB);
-	printf("walls %d\n", message->wallsRGB);
-	printf(" Text %s\n", message->text);
-	printf("Image %s\n", message->image);
+	uint32_t knobs = getKnobsValue(mem_base);
+	sprintf(pom, "0x%08x", (unsigned int)knobs);
+	writeText(img, 20, line*20, pom);
+	repaintScreen(lcd_base, img);
+	line++;
 	
-		
+	clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
 	free(address);
 	free(img);
 	return 0;
