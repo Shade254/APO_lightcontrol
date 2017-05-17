@@ -5,7 +5,7 @@
 #include "mzapo_regs.h"
 
 unsigned char* initMemBase(){
-	unsigned char* base = map_phys_address(SPILLED_REG_BASE_PHYS,
+	unsigned char* base = map_phys_address(SPILED_REG_BASE_PHYS,
 	SPILED_REG_SIZE, 0);
 	
 	if(base == NULL){
