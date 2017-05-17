@@ -11,7 +11,7 @@
 #include "netcom.h"
 
 #define SEND_PORT 6666 
-#define BIND_PORT 1234
+#define BIND_PORT 55555
 
 int initCommunication(){
 	struct sockaddr_in bindaddr;

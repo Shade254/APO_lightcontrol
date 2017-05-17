@@ -52,20 +52,17 @@ Image* createMenuScreen(char** strings, int num, int index){
 }
 
 void sendEdit(unsigned char* walls, unsigned char* ceiling, char* text, int socket, char* ip){
-	
 	MessageHead* head = getMessageHead(SET_TYPE);
 	EditMessage* message = createEditMessage(walls, ceiling);
 	
-	
 	int h = sendBytes(socket, (void*)head, ip, sizeof(MessageHead));
-	sleep(1);
 	int b = sendBytes(socket, (void*)message, ip, sizeof(EditMessage));
 	
-	printf("Sent %d bytes as header\n", h);
-	printf("and %d bytes as body\n");
-	
+	if(h&&b) printf("[OK] Sent\n");
+	else printf("[ERROR] Not Sent\n");
 	char* mes = printMessage(head, message);
 	printf("%s\n", mes);
+	
 }
 
 void runSettings(char* ip, char* text, unsigned char* mem_base, unsigned char* lcd_base, int socket){
@@ -125,6 +122,13 @@ void runSettings(char* ip, char* text, unsigned char* mem_base, unsigned char* l
 	}
 }
 
+InfoMessage* getBroadcasters(int socket){
+	char* address = calloc(16, sizeof(char));
+	void* bytes = receiveBytes(socket, sizeof(MessageHead) + sizeof(InfoMessage), address);
+	printf("Adress: %s\n", address);
+	return NULL;
+}
+
 int getIndexIncrement(int lastVal, int curVal){
 	if(lastVal != curVal){
 		if(abs(curVal-lastVal) > 250){
@@ -169,9 +173,9 @@ int main(){
 	int index = 0;
 	unsigned char* val = numToCharRGB(getKnobsValue(mem_base));
 	int lastVal = (int)val[0];
-	
 	free(img);
-	while(1){
+	
+	while(0){
 		uint32_t knobs = getKnobsValue(mem_base);
 		int* buttons = getButtonValue(knobs);
 		if(buttons[1]){
@@ -195,7 +199,7 @@ int main(){
 		free(img);
 		clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
 	}
-	
+		
 	free(address);
 	free(img);
 	return 0;
