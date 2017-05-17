@@ -94,16 +94,20 @@ int main(){
 	
 	free(img);
 	while(1){
-		val = numToCharRGB(getKnobsValue(mem_base));
-		index += getIndexIncrement(lastVal, (int)val[0], index);
+		uint32_t knobs = getKnobsValue(mem_base);
 		
-		if(index<0) index = (5-index);
+		val = numToCharRGB(getKnobsValue(mem_base));
+		/*index += getIndexIncrement(lastVal, (int)val[0], index);
+		
+		if(index<0) index = (5+index);
 		index = index%5;
 		printf("%d\n", index);
 		
 		lastVal = (int)val[0];
 		
-		img = createMenuScreen(a, 5, index);
+		img = createMenuScreen(a, 5, index);*/
+		sprintf(pom, "0x%08x", (unsigned int)knobs);
+		img = createTextScreen(20, 20*line, pom);
 		repaintScreen(lcd_base, img);
 		free(img);
 		clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
