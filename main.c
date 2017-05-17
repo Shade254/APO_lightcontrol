@@ -67,7 +67,7 @@ int main(){
 	unsigned char* mem_base = initMemBase();
 	
 	char* address = malloc(16*sizeof(char));
-	char* pom = calloc(10, sizeof(char));
+	char* pom = calloc(30, sizeof(char));
 	const char* a[5];
 	a[0] = "ahoj";
 	a[1] = "lidi";
@@ -95,19 +95,20 @@ int main(){
 	free(img);
 	while(1){
 		uint32_t knobs = getKnobsValue(mem_base);
-		
+		int* buttons = getButtonValue(knobs);
+		/*
 		val = numToCharRGB(getKnobsValue(mem_base));
-		/*index += getIndexIncrement(lastVal, (int)val[0], index);
+		index += getIndexIncrement(lastVal, (int)val[0], index);
 		
 		if(index<0) index = (5+index);
 		index = index%5;
 		printf("%d\n", index);
 		
 		lastVal = (int)val[0];
-		
-		img = createMenuScreen(a, 5, index);*/
-		sprintf(pom, "0x%08x", (unsigned int)knobs);
-		img = createTextScreen(20, 20*line, pom);
+		*/
+		sprintf(pom, "0x%08x\n%d %d %d\n", (unsigned int)knobs, buttons[0], buttons[1], buttons[2]);
+		//img = createMenuScreen(a, 5, index);
+		img = createTextScreen(20, 20, pom);
 		repaintScreen(lcd_base, img);
 		free(img);
 		clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);

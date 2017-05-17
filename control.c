@@ -17,6 +17,20 @@ unsigned char* initMemBase(){
 	return base;
 }
 
+int* getButtonValue(uint32_t knobs){
+	int* result = calloc(3, sizeof(int));
+	uint32_t mask = 255;
+	mask = mask<<24;
+	mask = (mask&knobs)>>24;
+	
+	char value = mask;
+	result[2] = (value&1);
+	result[1] = (value&(1<<1));
+	result[0] = (value&(1<<2));
+	
+	return result;
+}
+
 uint32_t getKnobsValue(unsigned char* mem_base){
 	return *(volatile uint32_t*)(mem_base + SPILED_REG_KNOBS_8BIT_o);
 }
