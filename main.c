@@ -52,7 +52,9 @@ int main(){
 	
 	while(1){
 		uint32_t knobs = getKnobsValue(mem_base);
-		sprintf(pom, "0x%08x", (unsigned int)knobs);
+		unsigned char* val = numToCharRGB(knobs);
+		sprintf(pom, "%d-%d-%d", (int)val[0], (int)val[1], (int)val[2]);
+		
 		writeText(img, 20, line*20, pom);
 		repaintScreen(lcd_base, img);
 		line++;
