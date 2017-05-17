@@ -53,8 +53,8 @@ void sendEdit(unsigned char* walls, unsigned char* ceiling, char* text, int sock
 	MessageHead* head = getMessageHead(SET_TYPE);
 	EditMessage* message = createEditMessage(walls, ceiling);
 	
-	int h = sendBytes(socket, (void*)head, ip, sizeof(*head));
-	int b = sendBytes(socket, (void*)message, ip, sizeof(*message));
+	int h = sendBytes(socket, (void*)head, ip, sizeof(MessageHead));
+	int b = sendBytes(socket, (void*)message, ip, sizeof(EditMessage));
 	
 	printf("Sent %d bytes as header\n", h);
 	printf("and %d bytes as body\n");
