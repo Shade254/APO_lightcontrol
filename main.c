@@ -60,7 +60,7 @@ void sendEdit(unsigned char* walls, unsigned char* ceiling, char* text, int sock
 	
 	if(h&&b) printf("[OK] Sent\n");
 	else printf("[ERROR] Not Sent\n");
-	char* mes = printMessage(head, message);
+	char* mes = printEditMessage(head, message);
 	printf("%s\n", mes);
 	
 }
@@ -122,17 +122,36 @@ void runSettings(char* ip, char* text, unsigned char* mem_base, unsigned char* l
 	}
 }
 
-char* getBroadcasters(int socket){
+InfoMessage* getBroadcasters(int socket){
+	int length = 0;
+	InfoMessage** incoming = calloc(10, sizeof(InfoMessage*));
+	char** ips = calloc(10, sizeof(char*));
+	void* cur = (void*)incoming;
+	
 	printf("Getting...");
-	char* address = calloc(16, sizeof(char));
-	void* bytes = receiveBytes(socket, sizeof(MessageHead) + sizeof(InfoMessage), address);
-	printf("Adress: %s\n", address);
 	
-	MessageHead* head = (MessageHead*) bytes;
-	InfoMessage* message = (InfoMessage*)(bytes+sizeof(MessageHead));
+	for(int i = 0;i<10;i++){
+			char* address = calloc(16, sizeof(char));
+			void* bytes = receiveBytes(socket, sizeof(MessageHead) + sizeof(InfoMessage), address);
+			printf("Adress: %s\n", address);
 	
+			MessageHead* head = (MessageHead*) bytes;
+			InfoMessage* message = (InfoMessage*)(bytes+sizeof(MessageHead));
+			printf("%s\n", printInfoMessage(head, message));
+			
+			ips[length] = address;
+			incoming[length] = message;
+			length++;
+	}
 	
-	return printInfoMessage(head, message);
+	printf("--------------------------");
+	
+	for(int i = 0; i<length;i++){
+		printf("Adress: %s\n", ips[i]);
+		printf("Text: %s\n", incoming[i]->text);
+	}
+	
+	return incoming;
 }
 
 int getIndexIncrement(int lastVal, int curVal){
@@ -205,10 +224,8 @@ int main(){
 		free(img);
 		clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
 	}
-	printf("%s\n", getBroadcasters(socket));
-	printf("%s\n", getBroadcasters(socket));
-	printf("%s\n", getBroadcasters(socket));
-	printf("%s\n", getBroadcasters(socket));
+		
+	getBroadcasters(socket);
 	
 	free(address);
 	free(img);
