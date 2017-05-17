@@ -46,6 +46,42 @@ Image* createMenuScreen(char** strings, int num, int index){
 	return img;
 }
 
+void runSettings(char* ip, char* text, unsigned char* mem_base, unsigned char* lcd_base, struct timespec loop_delay){
+	char* pom = calloc(40, sizeof(char));
+	char* title = calloc(50, sizeof(char));
+	sprintf(title, "Settings of %s\n on adress %s", text, ip);
+		
+	unsigned char wallRGB[3] = {0, 0, 0};
+	unsigned char ceilingRGB[3] = {0, 0, 0};
+	 
+	uint32_t old = getKnobsValue(mem_base);
+	uint32_t new;
+	
+	while(1){
+		new = getKnobsValue(mem_base);
+		
+		int* b = getButtonValue(new);
+		if(b[0]) exit(1);
+		
+		char* inc = getValueIncrement(old, new);
+				
+		wallRGB[0] += inc[0];
+		wallRGB[1] += inc[1];
+		wallRGB[2] += inc[2];
+
+		old = new;
+		
+		sprintf(pom, "R:%d G:%d B:%d", wallRGB[0], wallRGB[1], wallRGB[2]);
+		
+		Image* img = createTextScreen(20, 20, title);
+		writeText(img, 20, 60, pom);
+		repaintScreen(lcd_base, img);
+		free(img);
+		free(inc);
+		clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
+	}
+}
+
 int getIndexIncrement(int lastVal, int curVal, int index){
 	printf("Index %d (%d, %d) -> ", index, lastVal, curVal);
 	if(lastVal != curVal){
@@ -87,6 +123,7 @@ int main(){
 	
 	repaintScreen(lcd_base, img);
 	line++;
+	address = "127.0.0.1";
 	
 	int index = 0;
 	unsigned char* val = numToCharRGB(getKnobsValue(mem_base));
@@ -96,7 +133,10 @@ int main(){
 	while(1){
 		uint32_t knobs = getKnobsValue(mem_base);
 		int* buttons = getButtonValue(knobs);
-		/*
+		if(buttons[0]){
+			runSettings(address, a[0], mem_base, lcd_base, loop_delay);
+		}
+		
 		val = numToCharRGB(getKnobsValue(mem_base));
 		index += getIndexIncrement(lastVal, (int)val[0], index);
 		
@@ -105,10 +145,8 @@ int main(){
 		printf("%d\n", index);
 		
 		lastVal = (int)val[0];
-		*/
-		sprintf(pom, "0x%08x\n%d %d %d\n", (unsigned int)knobs, buttons[0], buttons[1], buttons[2]);
-		//img = createMenuScreen(a, 5, index);
-		img = createTextScreen(20, 20, pom);
+		
+		img = createMenuScreen(a, 5, index);
 		repaintScreen(lcd_base, img);
 		free(img);
 		clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
