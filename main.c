@@ -54,7 +54,10 @@ void runSettings(char* ip, char* text, unsigned char* mem_base, unsigned char* l
 	unsigned char wallRGB[3] = {0, 0, 0};
 	unsigned char ceilingRGB[3] = {0, 0, 0};
 	 
+	unsigned char* oldValues;
 	uint32_t old = getKnobsValue(mem_base);
+	oldValues = numToCharRGB(old);
+	
 	uint32_t new;
 	
 	while(1){
@@ -63,13 +66,11 @@ void runSettings(char* ip, char* text, unsigned char* mem_base, unsigned char* l
 		int* b = getButtonValue(new);
 		if(b[0]) exit(1);
 		
-		char* inc = getValueIncrement(old, new);
-				
-		wallRGB[0] = inc[0];
-		wallRGB[1] = inc[1];
-		wallRGB[2] = inc[2];
-
-		old = new;
+		unsigned char* newValues = numToCharRGB(new);
+		
+		for(int i = 0;i<3;i++){
+			wallRGB[i] += getIndexIncrement(oldValues[i], newValues[i]);
+		}
 		
 		sprintf(pom, "R:%d G:%d B:%d", wallRGB[0], wallRGB[1], wallRGB[2]);
 		
@@ -77,12 +78,13 @@ void runSettings(char* ip, char* text, unsigned char* mem_base, unsigned char* l
 		writeText(img, 20, 60, pom);
 		repaintScreen(lcd_base, img);
 		free(img);
-		free(inc);
+		free(oldValues);
+		oldValues = newValues;
 		clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
 	}
 }
 
-int getIndexIncrement(int lastVal, int curVal, int index){
+int getIndexIncrement(int lastVal, int curVal){
 	if(lastVal != curVal){
 		if(abs(curVal-lastVal) > 250){
 			if(curVal>lastVal) return -1;
@@ -138,7 +140,7 @@ int main(){
 		}
 		
 		val = numToCharRGB(getKnobsValue(mem_base));
-		index += getIndexIncrement(lastVal, (int)val[0], index);
+		index += getIndexIncrement(lastVal, (int)val[0]);
 		
 		if(index<0) index = (5+index);
 		index = index%5;
