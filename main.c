@@ -144,7 +144,7 @@ InfoMessage* getBroadcasters(int socket){
 			length++;
 	}
 	
-	printf("--------------------------");
+	printf("--------------------------\n");
 	
 	for(int i = 0; i<length;i++){
 		printf("Adress: %s\n", ips[i]);
@@ -227,8 +227,8 @@ int main(){
 		
 	getBroadcasters(socket);
 	
-	free(address);
 	free(img);
+	
 	return 0;
 }
 
