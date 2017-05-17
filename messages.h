@@ -21,7 +21,9 @@ typedef struct {
 
 InfoMessage* createInfoMessage(unsigned char* wallRGB, unsigned char* ceilingRGB, char* text, char* image);
 
-char* printMessage(MessageHead* head, EditMessage* message);
+char* printEditMessage(MessageHead* head, EditMessage* message);
+
+char* printInfoMessage(MessageHead* head, InfoMessage* message);
 
 MessageHead* getHead(int type);
 

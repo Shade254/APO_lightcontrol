@@ -122,12 +122,17 @@ void runSettings(char* ip, char* text, unsigned char* mem_base, unsigned char* l
 	}
 }
 
-InfoMessage* getBroadcasters(int socket){
+char* getBroadcasters(int socket){
 	printf("Getting...");
 	char* address = calloc(16, sizeof(char));
 	void* bytes = receiveBytes(socket, sizeof(MessageHead) + sizeof(InfoMessage), address);
 	printf("Adress: %s\n", address);
-	return NULL;
+	
+	MessageHead* head = (MessageHead*) bytes;
+	InfoMessage* message = (InfoMessage*)(bytes+sizeof(MessageHead));
+	
+	
+	return printInfoMessage(head, message);
 }
 
 int getIndexIncrement(int lastVal, int curVal){
@@ -200,7 +205,10 @@ int main(){
 		free(img);
 		clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
 	}
-	getBroadcasters(socket);
+	printf("%s\n", getBroadcasters(socket));
+	printf("%s\n", getBroadcasters(socket));
+	printf("%s\n", getBroadcasters(socket));
+	printf("%s\n", getBroadcasters(socket));
 	
 	free(address);
 	free(img);

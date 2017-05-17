@@ -75,9 +75,16 @@ MessageHead* getMessageHead(int type){
 	return head;
 }
 
+char* printInfoMessage(MessageHead* head, InfoMessage* message){
+	char* str = calloc(sizeof(char), 80); 
+	sprintf(str, "ALC: %d\nPROTOCOL: %d\nTYPE: %d\nRGB_WALL: %d\nRGB_CEILING: %d\nTEXT: %s\n\n\nIMAGE: %s"
+				, head->ALC1, head->protocol,
+				head->type, message->wallsRGB, message->ceilingRGB,
+				message->text, message->image);
+	return str;	
+}
 
-
-char* printMessage(MessageHead* head, EditMessage* message){
+char* printEditMessage(MessageHead* head, EditMessage* message){
 	int16_t w[3];
 	int16_t c[3];
 	
