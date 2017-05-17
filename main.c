@@ -83,7 +83,6 @@ void runSettings(char* ip, char* text, unsigned char* mem_base, unsigned char* l
 }
 
 int getIndexIncrement(int lastVal, int curVal, int index){
-	printf("Index %d (%d, %d) -> ", index, lastVal, curVal);
 	if(lastVal != curVal){
 		if(abs(curVal-lastVal) > 250){
 			if(curVal>lastVal) return -1;
@@ -134,7 +133,8 @@ int main(){
 		uint32_t knobs = getKnobsValue(mem_base);
 		int* buttons = getButtonValue(knobs);
 		if(buttons[0]){
-			runSettings(address, a[0], mem_base, lcd_base, loop_delay);
+			printf("Button clicked  - accessing menu");
+			runSettings(address, a[index], mem_base, lcd_base, loop_delay);
 		}
 		
 		val = numToCharRGB(getKnobsValue(mem_base));
@@ -142,7 +142,6 @@ int main(){
 		
 		if(index<0) index = (5+index);
 		index = index%5;
-		printf("%d\n", index);
 		
 		lastVal = (int)val[0];
 		
