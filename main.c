@@ -30,7 +30,7 @@
 #define TEXT_B 255
 
 int main(){
-	struct timespec loop_delay = {.tv_sec = 0, .tv_nsec = 200 * 1000 * 1000};
+	struct timespec loop_delay = {.tv_sec = 0, .tv_nsec = 2000 * 1000 * 1000};
 	int socket = initCommunication();
 	unsigned char* lcd_base = initScreen();
 	unsigned char* mem_base = initMemBase();
@@ -50,13 +50,14 @@ int main(){
 	repaintScreen(lcd_base, img);
 	line++;
 	
-	uint32_t knobs = getKnobsValue(mem_base);
-	sprintf(pom, "0x%08x", (unsigned int)knobs);
-	writeText(img, 20, line*20, pom);
-	repaintScreen(lcd_base, img);
-	line++;
-	
-	clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
+	while(1)
+		uint32_t knobs = getKnobsValue(mem_base);
+		sprintf(pom, "0x%08x", (unsigned int)knobs);
+		writeText(img, 20, line*20, pom);
+		repaintScreen(lcd_base, img);
+		line++;
+		clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
+	}
 	free(address);
 	free(img);
 	return 0;
