@@ -56,6 +56,9 @@ void sendEdit(unsigned char* walls, unsigned char* ceiling, char* text, int sock
 	int h = sendBytes(socket, (void*)head, ip, sizeof(*head));
 	int b = sendBytes(socket, (void*)message, ip, sizeof(*message));
 	
+	printf("Sent %d bytes as header\n", h);
+	printf("and %d bytes as body\n");
+	
 	char* mes = printMessage(head, message);
 	printf("%s\n", mes);
 }

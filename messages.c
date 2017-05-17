@@ -62,7 +62,7 @@ EditMessage* createEditMessage(unsigned char* walls, unsigned char* ceiling){
 	EditMessage* m = malloc(sizeof(EditMessage));
 	for(int i = 0;i<3;i++){
 		m->wallsRGB[i] = (int16_t)walls[i];
-		m->ceilingRGB[i] = (int16_t)ceilingRGB[i];
+		m->ceilingRGB[i] = (int16_t)ceiling[i];
 	}
 	return m;
 }
@@ -83,7 +83,7 @@ char* printMessage(MessageHead* head, EditMessage* message){
 	
 	for(int i = 0;i<3;i++){
 		w[i] = (unsigned int)message->wallsRGB[i];
-		c[i] = (unsigned int)message->ceiling[i];
+		c[i] = (unsigned int)message->ceilingRGB[i];
 	}
 	
 	char* str = calloc(sizeof(char), 80); 
