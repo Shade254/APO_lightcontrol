@@ -46,9 +46,11 @@ char* getValueIncrement(uint32_t old, uint32_t new){
 	ng = (new & 0x0000FF00)>>10;
 	nb = (new & 0x000000FF)>>2;
 	
-	increment[0] = (or-nr);
-	increment[1] = (og-ng);
-	increment[2] = (ob-nb);
+	increment[0] = (nr-or);
+	increment[1] = (ng-og);
+	increment[2] = (nb-ob);
+	
+	printf("%d-%d-%d\n", increment[0], increment[1], increment[2]);
 	
 	return increment;
 }
