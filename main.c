@@ -49,10 +49,13 @@ Image* createMenuScreen(char** strings, int num, int index){
 }
 
 void sendEdit(unsigned char* walls, unsigned char* ceiling, char* text, int socket, char* ip){
+	
 	MessageHead* head = getMessageHead(SET_TYPE);
-	InfoMessage* message = createInfoMessage(walls, ceiling, text, NULL);
+	EditMessage* message = createEditMessage(walls, ceiling);
+	
 	int h = sendBytes(socket, (void*)head, ip, sizeof(*head));
 	int b = sendBytes(socket, (void*)message, ip, sizeof(*message));
+	
 	char* mes = printMessage(head, message);
 	printf("%s\n", mes);
 }

@@ -58,6 +58,12 @@ InfoMessage* createInfoMessage(unsigned char* wallRGB, unsigned char* ceilingRGB
 	
 	return info;
 }
+EditMessage* createEditMessage(unsigned char* walls, unsigned char* ceiling){
+	EditMessage* m = malloc(sizeof(EditMessage));
+	memcpy(m->wallsRGB, walls, 3);
+	memcpy(m->ceilingRGBRGB, ceiling, 3);
+	return m;
+}
 
 MessageHead* getMessageHead(int type){
 	MessageHead* head = malloc(sizeof(MessageHead));
