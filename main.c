@@ -58,13 +58,13 @@ void sendEdit(unsigned char* walls, unsigned char* ceiling, char* text, int sock
 }
 
 void runSettings(char* ip, char* text, unsigned char* mem_base, unsigned char* lcd_base, struct timespec loop_delay, int socket){
-	char* pom = calloc(40, sizeof(char));
+	char* pom = calloc(60, sizeof(char));
 	char* title = calloc(50, sizeof(char));
 	sprintf(title, "Settings of %s\n on adress %s", text, ip);
 		
 	unsigned char wallRGB[3] = {0, 0, 0};
 	unsigned char ceilingRGB[3] = {0, 0, 0};
-	 
+	int flag = 0;
 	unsigned char* oldValues;
 	uint32_t old = getKnobsValue(mem_base);
 	oldValues = numToCharRGB(old);
@@ -76,21 +76,29 @@ void runSettings(char* ip, char* text, unsigned char* mem_base, unsigned char* l
 		
 		int* b = getButtonValue(new);
 		if(b[0]) break;
+		if(b[1]) flag = !flag;
 		if(b[2]){
 			 sendEdit(wallRGB, ceilingRGB, text, socket, ip);
 			 break;
 		 }
+		 
 		
 		unsigned char* newValues = numToCharRGB(new);
 		
 		for(int i = 0;i<3;i++){
-			wallRGB[i] += getIndexIncrement(oldValues[i], newValues[i]);
+			if(flag){
+				wallRGB[i] += getIndexIncrement(oldValues[i], newValues[i]);
+			}
+			else{
+				ceilingRGB[i] += getIndexIncrement(oldValues[i], newValues[i]);
+			}
 		}
 		
-		sprintf(pom, "R:%d G:%d B:%d", wallRGB[0], wallRGB[1], wallRGB[2]);
-		
+		sprintf(pom, "Walls - R:%d G:%d B:%d", wallRGB[0], wallRGB[1], wallRGB[2]);
 		Image* img = createTextScreen(20, 20, title);
 		writeText(img, 20, 60, pom);
+		sprintf(pom, "Ceiling - R:%d G:%d B:%d", ceilingRGB[0], ceilingRGB[1], ceilingRGB[2]);
+		writeText(img, 20, 80, pom);
 		repaintScreen(lcd_base, img);
 		free(img);
 		free(oldValues);
