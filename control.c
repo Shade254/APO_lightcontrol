@@ -32,11 +32,11 @@ int* getButtonValue(uint32_t knobs){
 	return result;
 }
 
-char* getValueIncrement(uint32_t old, uint32_t new){
+uint8_t* getValueIncrement(uint32_t old, uint32_t new){
 	uint8_t or, og, ob;
 	uint8_t nr, ng, nb;
 	
-	char* increment = calloc(3, sizeof(char));
+	uint8_t* increment = calloc(3, sizeof(uint8_t));
 	
 	or = (old & 0x00FF0000)>>18;
 	og = (old & 0x0000FF00)>>10;
@@ -46,11 +46,17 @@ char* getValueIncrement(uint32_t old, uint32_t new){
 	ng = (new & 0x0000FF00)>>10;
 	nb = (new & 0x000000FF)>>2;
 	
-	increment[0] = (nr-or);
-	increment[1] = (ng-og);
-	increment[2] = (nb-ob);
+	or = (or-nr);
+	og = (og-ng);
+	ob = (ob-nb);
 	
-	printf("%d-%d-%d\n", increment[0], increment[1], increment[2]);
+	increment[0] = or;
+	
+	increment[1] = og;
+	
+	increment[2] = ob;
+	
+	printf("%d-%d-%d\n", or, og, ob);
 	
 	return increment;
 }
