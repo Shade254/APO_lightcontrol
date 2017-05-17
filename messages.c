@@ -46,9 +46,6 @@ unsigned char* numToCharRGB(uint32_t RGB){
 
 InfoMessage* createInfoMessage(unsigned char* wallRGB, unsigned char* ceilingRGB, char* text, char* image){
 	InfoMessage* info = malloc(sizeof(InfoMessage));
-	info->ALC1 = (uint32_t)ALC;
-	info->protocol = (uint32_t)PROTOCOL;
-	info->type = (uint32_t)TYPE;
 	
 	info->ceilingRGB = charToNumRGB(ceilingRGB);
 	info->wallsRGB = charToNumRGB(wallRGB);
@@ -62,10 +59,30 @@ InfoMessage* createInfoMessage(unsigned char* wallRGB, unsigned char* ceilingRGB
 	return info;
 }
 
-char* printMessage(InfoMessage* message){
+MessageHead* getMessageHead(int type){
+	MessageHead* head = malloc(sizeof(MessageHead));
+	head->ALC1 = ALC;
+	head->protocol = PROTOCOL;
+	head->type = (uint32_t) type;
+	return head;
+}
+
+
+
+char* printMessage(MessageHead* head, EditMessage* message){
+	int w[3];
+	int c[3];
+	
+	for(int i = 0;i<3;i++){
+		w[i] = message->wallsRGB[i];
+		c[i] = message->ceilingRGB[i];
+	}
+	
 	char* str = calloc(sizeof(char), 80); 
-	sprintf(str, "%d-%d-%d-%d-%d-%s", message->ALC1, message->protocol, 
-	message->type, message->ceilingRGB, message->wallsRGB, message->text);
+	sprintf(str, "ALC: %d\nPROTOCOL: %d\nTYPE: %d\nRGB_WALL: %d %d %d\nRGB_CEILING: %d %d %d"
+				, head->ALC1, head->protocol,
+				head->type, w[0], w[1], w[2], 
+				c[0], c[1], c[2]);
 	return str;
 }
 

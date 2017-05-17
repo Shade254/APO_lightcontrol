@@ -28,6 +28,8 @@
 #define TEXT_R 255
 #define TEXT_G 255
 #define TEXT_B 255
+#define INCREMENT_TYPE 1
+#define SET_TYPE 2
 
 Image* createMenuScreen(char** strings, int num, int index){
 	Image* img = createBlankScreen(BASE_R, BASE_G, BASE_B);
@@ -46,7 +48,16 @@ Image* createMenuScreen(char** strings, int num, int index){
 	return img;
 }
 
-void runSettings(char* ip, char* text, unsigned char* mem_base, unsigned char* lcd_base, struct timespec loop_delay){
+void sendEdit(unsigned char* walls, unsigned char* ceiling, char* text, int socket, char* ip){
+	MessageHead* head = getMessageHead(SET_TYPE);
+	InfoMessage* message = createInfoMessage(walls, ceiling, text, NULL);
+	int h = sendBytes(socket, (void*)head, ip, sizeof(*head));
+	int b = sendBytes(socket, (void*)message, ip, sizeof(*message));
+	char* mes = printMessage(head, message);
+	printf("%s\n", mes);
+}
+
+void runSettings(char* ip, char* text, unsigned char* mem_base, unsigned char* lcd_base, struct timespec loop_delay, int socket){
 	char* pom = calloc(40, sizeof(char));
 	char* title = calloc(50, sizeof(char));
 	sprintf(title, "Settings of %s\n on adress %s", text, ip);
@@ -64,7 +75,11 @@ void runSettings(char* ip, char* text, unsigned char* mem_base, unsigned char* l
 		new = getKnobsValue(mem_base);
 		
 		int* b = getButtonValue(new);
-		if(b[0]) exit(1);
+		if(b[0]) break;
+		if(b[2]){
+			 sendEdit(wallRGB, ceilingRGB, text, socket, ip);
+			 break;
+		 }
 		
 		unsigned char* newValues = numToCharRGB(new);
 		
@@ -136,7 +151,7 @@ int main(){
 		int* buttons = getButtonValue(knobs);
 		if(buttons[1]){
 			printf("Button clicked  - accessing menu");
-			runSettings(address, a[index], mem_base, lcd_base, loop_delay);
+			runSettings(address, a[index], mem_base, lcd_base, loop_delay, socket);
 		}
 		
 		val = numToCharRGB(getKnobsValue(mem_base));
