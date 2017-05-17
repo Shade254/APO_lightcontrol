@@ -173,7 +173,7 @@ int main(){
 	int index = 0;
 	unsigned char* val = numToCharRGB(getKnobsValue(mem_base));
 	int lastVal = (int)val[0];
-	free(img);
+	//free(img);
 	
 	while(0){
 		uint32_t knobs = getKnobsValue(mem_base);
@@ -199,7 +199,8 @@ int main(){
 		free(img);
 		clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
 	}
-		
+	getBroadcasters(socket);
+	
 	free(address);
 	free(img);
 	return 0;
