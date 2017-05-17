@@ -31,12 +31,13 @@
 
 Image* createMenuScreen(char** strings, int num, int index){
 	Image* img = createBlankScreen(BASE_R, BASE_G, BASE_B);
+	
 	int line = 0;
 	writeText(img, 20, 20*line, "Available units: ");
 	for(int i = 0;i<num;i++){
 		printf("%d is %s\n", i, strings[i]);
 		if(index == i){
-			char* pom = {16, 0};
+			char pom[2] = {16, 0};
 			writeText(img, 0, 20*line, pom);
 		}
 		writeText(img, 20, 20*line, strings[i]);
@@ -45,6 +46,24 @@ Image* createMenuScreen(char** strings, int num, int index){
 	return img;
 }
 
+int getIndexIncrement(int lastVal, int curVal, int index){
+	if(lastVal != curVal){
+		if(lastVal > curVal){
+			if(curVal > 4){
+				return -1;
+			} else {
+				return +1;
+			}
+		} else if(curVal > lastVal){
+			if(curVal < 252){
+				return +1;
+			} else {
+				return -1;
+			}	
+		}
+	}
+	return 0;
+}
 
 int main(){
 	struct timespec loop_delay = {.tv_sec = 0, .tv_nsec = 2000 * 1000 * 1000};
@@ -74,14 +93,21 @@ int main(){
 	repaintScreen(lcd_base, img);
 	line++;
 	
+	int index = 0;
+	unsigned char* val = numToCharRGB(getKnobsValue(mem_base));
+	int lastVal = (int)val[0];
 	
 	free(img);
 	while(1){
-		img = createMenuScreen(a, 4, 1);
-		createMenuScreen(img, a, 5, 2);
+		val = numToCharRGB(getKnobsValue(mem_base));
+		index += getIndexIncrement(lastVal, (int)val[0], index);
 		
-		uint32_t knobs = getKnobsValue(mem_base);
-		unsigned char* val = numToCharRGB(knobs);		
+		if(index<0) index = (5-index);
+		index = index%5;
+		
+		lastVal = (int)val[0];
+		
+		img = createMenuScreen(a, 5, index);
 		repaintScreen(lcd_base, img);
 		free(img);
 		clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
