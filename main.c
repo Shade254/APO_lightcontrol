@@ -34,8 +34,8 @@ Image* createMenuScreen(char** strings, int num, int index){
 	
 	int line = 0;
 	writeText(img, 20, 20*line, "Available units: ");
+	line++;
 	for(int i = 0;i<num;i++){
-		printf("%d is %s\n", i, strings[i]);
 		if(index == i){
 			char pom[2] = {16, 0};
 			writeText(img, 0, 20*line, pom);
