@@ -123,6 +123,7 @@ void runSettings(char* ip, char* text, unsigned char* mem_base, unsigned char* l
 }
 
 InfoMessage* getBroadcasters(int socket){
+	printf("Getting...");
 	char* address = calloc(16, sizeof(char));
 	void* bytes = receiveBytes(socket, sizeof(MessageHead) + sizeof(InfoMessage), address);
 	printf("Adress: %s\n", address);
