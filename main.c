@@ -29,6 +29,20 @@
 #define TEXT_G 255
 #define TEXT_B 255
 
+void createMenuScreen(Image* img, char** strings, int num, int index){
+	int line = 0;
+	writeText(img, 20, 20*line, "Available units: ");
+	for(int i = 0;i<num;i++){
+		if(index == i){
+			char* pom = {16, 0};
+			writeText(img, 0, 20*line, pom);
+		}
+		writeText(img, 20, 20*line, strings[i]);
+		line++;
+	}
+}
+
+
 int main(){
 	struct timespec loop_delay = {.tv_sec = 0, .tv_nsec = 2000 * 1000 * 1000};
 	int socket = initCommunication();
@@ -37,6 +51,13 @@ int main(){
 	
 	char* address = malloc(16*sizeof(char));
 	char* pom = calloc(10, sizeof(char));
+	const char* a[5];
+	a[0] = "ahoj";
+	a[1] = "lidi";
+	a[2] = "jak";
+	a[3] = "se";
+	a[4] = "mate";
+	
 	Image* img;
 	int line = 0;
 	
@@ -50,16 +71,18 @@ int main(){
 	repaintScreen(lcd_base, img);
 	line++;
 	
+	
+	
 	while(1){
+		img = createBlankScreen(BASE_R, BASE_G, BASE_B);
+		createMenuScreen(img, a, 5, 2);
 		uint32_t knobs = getKnobsValue(mem_base);
-		unsigned char* val = numToCharRGB(knobs);
-		sprintf(pom, "%d-%d-%d", (int)val[0], (int)val[1], (int)val[2]);
-		
-		writeText(img, 20, line*20, pom);
+		unsigned char* val = numToCharRGB(knobs);		
 		repaintScreen(lcd_base, img);
 		line++;
 		clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
 	}
+	
 	free(address);
 	free(img);
 	return 0;
