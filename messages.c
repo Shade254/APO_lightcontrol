@@ -60,8 +60,10 @@ InfoMessage* createInfoMessage(unsigned char* wallRGB, unsigned char* ceilingRGB
 }
 EditMessage* createEditMessage(unsigned char* walls, unsigned char* ceiling){
 	EditMessage* m = malloc(sizeof(EditMessage));
-	memcpy(m->wallsRGB, walls, 3);
-	memcpy(m->ceilingRGBRGB, ceiling, 3);
+	for(int i = 0;i<3;i++){
+		m->wallsRGB[i] = (int16_t)walls[i];
+		m->ceilingRGB[i] = (int16_t)ceilingRGB[i];
+	}
 	return m;
 }
 
