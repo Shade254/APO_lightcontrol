@@ -132,7 +132,7 @@ int main(){
 	while(1){
 		uint32_t knobs = getKnobsValue(mem_base);
 		int* buttons = getButtonValue(knobs);
-		if(buttons[0]){
+		if(buttons[1]){
 			printf("Button clicked  - accessing menu");
 			runSettings(address, a[index], mem_base, lcd_base, loop_delay);
 		}
