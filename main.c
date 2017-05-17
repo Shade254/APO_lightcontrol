@@ -29,7 +29,8 @@
 #define TEXT_G 255
 #define TEXT_B 255
 
-void createMenuScreen(Image* img, char** strings, int num, int index){
+Image* createMenuScreen(char** strings, int num, int index){
+	Image* img = createBlankScreen(BASE_R, BASE_G, BASE_B);
 	int line = 0;
 	writeText(img, 20, 20*line, "Available units: ");
 	for(int i = 0;i<num;i++){
@@ -40,6 +41,7 @@ void createMenuScreen(Image* img, char** strings, int num, int index){
 		writeText(img, 20, 20*line, strings[i]);
 		line++;
 	}
+	return img;
 }
 
 
@@ -72,14 +74,14 @@ int main(){
 	line++;
 	
 	
-	
+	free(img);
 	while(1){
-		img = createBlankScreen(BASE_R, BASE_G, BASE_B);
+		img = createMenuScreen(a, 4, 1);
 		createMenuScreen(img, a, 5, 2);
 		uint32_t knobs = getKnobsValue(mem_base);
 		unsigned char* val = numToCharRGB(knobs);		
 		repaintScreen(lcd_base, img);
-		line++;
+		free(img);
 		clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
 	}
 	
