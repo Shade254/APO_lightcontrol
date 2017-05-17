@@ -61,7 +61,7 @@ void runSettings(char* ip, char* text, unsigned char* mem_base, unsigned char* l
 	char* pom = calloc(60, sizeof(char));
 	char* title = calloc(50, sizeof(char));
 	sprintf(title, "Settings of %s\n on adress %s", text, ip);
-		
+	char arrow[2] = {16,0};
 	unsigned char wallRGB[3] = {0, 0, 0};
 	unsigned char ceilingRGB[3] = {0, 0, 0};
 	int flag = 0;
@@ -99,6 +99,13 @@ void runSettings(char* ip, char* text, unsigned char* mem_base, unsigned char* l
 		writeText(img, 20, 60, pom);
 		sprintf(pom, "Ceiling - R:%d G:%d B:%d", ceilingRGB[0], ceilingRGB[1], ceilingRGB[2]);
 		writeText(img, 20, 80, pom);
+		
+		if(flag){
+			writeText(img, 0, 60, arrow);
+		} else {
+			writeText(img, 0, 80, arrow);
+		}
+		
 		repaintScreen(lcd_base, img);
 		free(img);
 		free(oldValues);
@@ -160,6 +167,10 @@ int main(){
 		if(buttons[1]){
 			printf("Button clicked  - accessing menu");
 			runSettings(address, a[index], mem_base, lcd_base, loop_delay, socket);
+		} 
+		
+		if(buttons[0]){
+			exit(1);
 		}
 		
 		val = numToCharRGB(getKnobsValue(mem_base));
