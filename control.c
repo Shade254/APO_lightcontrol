@@ -35,15 +35,16 @@ int* getButtonValue(uint32_t knobs){
 char* getValueIncrement(uint32_t old, uint32_t new){
 	uint8_t or, og, ob;
 	uint8_t nr, ng, nb;
+	
 	char* increment = calloc(3, sizeof(char));
 	
-	or = (old & 0x00FF0000);
-	og = (old & 0x0000FF00);
-	ob = (old & 0x000000FF);
+	or = (old & 0x00FF0000)>>18;
+	og = (old & 0x0000FF00)>>10;
+	ob = (old & 0x000000FF)>>2;
 	
-	nr = (new & 0x00FF0000);
-	ng = (new & 0x0000FF00);
-	nb = (new & 0x000000FF);
+	nr = (new & 0x00FF0000)>>18;
+	ng = (new & 0x0000FF00)>>10;
+	nb = (new & 0x000000FF)>>2;
 	
 	increment[0] = (or-nr);
 	increment[1] = (og-ng);
