@@ -46,14 +46,12 @@ uint8_t* getValueIncrement(uint32_t old, uint32_t new){
 	ng = (new & 0x0000FF00)>>10;
 	nb = (new & 0x000000FF)>>2;
 	
-	or = (or-nr);
-	og = (og-ng);
-	ob = (ob-nb);
+	or += (or-nr);
+	og += (og-ng);
+	ob += (ob-nb);
 	
 	increment[0] = or;
-	
 	increment[1] = og;
-	
 	increment[2] = ob;
 	
 	printf("%d-%d-%d\n", or, og, ob);

@@ -65,9 +65,9 @@ void runSettings(char* ip, char* text, unsigned char* mem_base, unsigned char* l
 		
 		char* inc = getValueIncrement(old, new);
 				
-		wallRGB[0] += inc[0];
-		wallRGB[1] += inc[1];
-		wallRGB[2] += inc[2];
+		wallRGB[0] = inc[0];
+		wallRGB[1] = inc[1];
+		wallRGB[2] = inc[2];
 
 		old = new;
 		
