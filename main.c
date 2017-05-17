@@ -31,6 +31,9 @@
 #define INCREMENT_TYPE 1
 #define SET_TYPE 2
 
+struct timespec loop_delay = {.tv_sec = 1, .tv_nsec = 1000 * 1000 * 1000};
+
+
 Image* createMenuScreen(char** strings, int num, int index){
 	Image* img = createBlankScreen(BASE_R, BASE_G, BASE_B);
 	
@@ -53,7 +56,9 @@ void sendEdit(unsigned char* walls, unsigned char* ceiling, char* text, int sock
 	MessageHead* head = getMessageHead(SET_TYPE);
 	EditMessage* message = createEditMessage(walls, ceiling);
 	
+	
 	int h = sendBytes(socket, (void*)head, ip, sizeof(MessageHead));
+	clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
 	int b = sendBytes(socket, (void*)message, ip, sizeof(EditMessage));
 	
 	printf("Sent %d bytes as header\n", h);
@@ -63,7 +68,7 @@ void sendEdit(unsigned char* walls, unsigned char* ceiling, char* text, int sock
 	printf("%s\n", mes);
 }
 
-void runSettings(char* ip, char* text, unsigned char* mem_base, unsigned char* lcd_base, struct timespec loop_delay, int socket){
+void runSettings(char* ip, char* text, unsigned char* mem_base, unsigned char* lcd_base, int socket){
 	char* pom = calloc(60, sizeof(char));
 	char* title = calloc(50, sizeof(char));
 	sprintf(title, "Settings of %s\n on adress %s", text, ip);
@@ -134,7 +139,6 @@ int getIndexIncrement(int lastVal, int curVal){
 }
 
 int main(){
-	struct timespec loop_delay = {.tv_sec = 1, .tv_nsec = 1000 * 1000 * 1000};
 	int socket = initCommunication();
 	unsigned char* lcd_base = initScreen();
 	unsigned char* mem_base = initMemBase();
@@ -171,7 +175,7 @@ int main(){
 		uint32_t knobs = getKnobsValue(mem_base);
 		int* buttons = getButtonValue(knobs);
 		if(buttons[1]){
-			runSettings(address, a[index], mem_base, lcd_base, loop_delay, socket);
+			runSettings(address, a[index], mem_base, lcd_base, socket);
 		} 
 		
 		if(buttons[0]){
