@@ -70,12 +70,13 @@ MessageHead* getMessageHead(int type){
 
 
 char* printMessage(MessageHead* head, EditMessage* message){
-	int w[3];
-	int c[3];
+	printf("Received walls: %d %d %d\n", message->wallsRGB[0], message->wallsRGB[1], message->wallsRGB[2]);
+	int16_t w[3];
+	int16_t c[3];
 	
 	for(int i = 0;i<3;i++){
-		w[i] = message->wallsRGB[i];
-		c[i] = message->ceilingRGB[i];
+		w[i] = (unsigned int)message->wallsRGB[i];
+		c[i] = (unsigned int)message->ceilingRGB[i];
 	}
 	
 	char* str = calloc(sizeof(char), 80); 
