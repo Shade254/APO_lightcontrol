@@ -34,6 +34,7 @@ Image* createMenuScreen(char** strings, int num, int index){
 	int line = 0;
 	writeText(img, 20, 20*line, "Available units: ");
 	for(int i = 0;i<num;i++){
+		printf("%d is %s\n", i, strings[i]);
 		if(index == i){
 			char* pom = {16, 0};
 			writeText(img, 0, 20*line, pom);
@@ -78,6 +79,7 @@ int main(){
 	while(1){
 		img = createMenuScreen(a, 4, 1);
 		createMenuScreen(img, a, 5, 2);
+		
 		uint32_t knobs = getKnobsValue(mem_base);
 		unsigned char* val = numToCharRGB(knobs);		
 		repaintScreen(lcd_base, img);
