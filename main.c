@@ -50,7 +50,7 @@ int main(){
 	repaintScreen(lcd_base, img);
 	line++;
 	
-	while(1)
+	while(1){
 		uint32_t knobs = getKnobsValue(mem_base);
 		sprintf(pom, "0x%08x", (unsigned int)knobs);
 		writeText(img, 20, line*20, pom);
