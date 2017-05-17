@@ -47,26 +47,21 @@ Image* createMenuScreen(char** strings, int num, int index){
 }
 
 int getIndexIncrement(int lastVal, int curVal, int index){
+	printf("Index %d (%d, %d) -> ", index, lastVal, curVal);
 	if(lastVal != curVal){
-		if(lastVal > curVal){
-			if(curVal > 4){
-				return -1;
-			} else {
-				return +1;
-			}
-		} else if(curVal > lastVal){
-			if(curVal < 252){
-				return +1;
-			} else {
-				return -1;
-			}	
+		if(abs(curVal-lastVal) > 250){
+			if(curVal>lastVal) return -1;
+			if(lastVal>curVal) return +1;
+		} else{
+			if(curVal>lastVal) return +1;
+			if(lastVal>curVal) return -1;
 		}
 	}
 	return 0;
 }
 
 int main(){
-	struct timespec loop_delay = {.tv_sec = 0, .tv_nsec = 2000 * 1000 * 1000};
+	struct timespec loop_delay = {.tv_sec = 1, .tv_nsec = 1000 * 1000 * 1000};
 	int socket = initCommunication();
 	unsigned char* lcd_base = initScreen();
 	unsigned char* mem_base = initMemBase();
@@ -104,6 +99,7 @@ int main(){
 		
 		if(index<0) index = (5-index);
 		index = index%5;
+		printf("%d\n", index);
 		
 		lastVal = (int)val[0];
 		
