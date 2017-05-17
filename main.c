@@ -58,7 +58,7 @@ void sendEdit(unsigned char* walls, unsigned char* ceiling, char* text, int sock
 	
 	
 	int h = sendBytes(socket, (void*)head, ip, sizeof(MessageHead));
-	clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
+	sleep(1);
 	int b = sendBytes(socket, (void*)message, ip, sizeof(EditMessage));
 	
 	printf("Sent %d bytes as header\n", h);
