@@ -47,8 +47,6 @@ char* printInfoMessage(MessageHead* head, InfoMessage* message){
 				, head->ALC1, head->protocol,
 				head->type, message->wallsRGB, w[0],w[1], w[2], message->ceilingRGB,
 				c[0], c[1], c[2], message->text, (char*)message->image);
-	free(w);
-	free(c);
 	return str;	
 }
 
