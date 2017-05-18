@@ -46,7 +46,7 @@ char* printInfoMessage(MessageHead* head, InfoMessage* message){
 	char* w = numToCharRGB(message->wallsRGB);
 	char* c = numToCharRGB(message->ceilingRGB);
 	
-	printf("ALC: %d\nPROTOCOL: %d\nTYPE: %d\nRGB_WALL: %d (%d-%d-%d)\nRGB_CEILING: %d (%c-%c-%c)\nTEXT: %s\n\n\nIMAGE: %s"
+	printf("ALC: %d\nPROTOCOL: %d\nTYPE: %d\nRGB_WALL: %d (%d-%d-%d)\nRGB_CEILING: %d (%d-%d-%d)\nTEXT: %s\n\n\nIMAGE: %s"
 				, head->ALC1, head->protocol,
 				head->type, message->wallsRGB, w[0],w[1], w[2], message->ceilingRGB,
 				c[0], c[1], c[2], message->text, (char*)message->image);

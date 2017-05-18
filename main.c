@@ -207,7 +207,7 @@ void broadcastMe(int socket){
 	int h = broadcast(socket, (void*)head, sizeof(MessageHead));
 	int b = broadcast(socket, (void*)message, sizeof(InfoMessage));
 	
-	if(h&b) printf("[OK] broadcasted sucessfully\n\n\n");
+	if(h&b) printf("\n[OK] broadcasted sucessfully\n\n\n");
 	else printf("[ERROR] Not broadcasted\n");
 }
 
@@ -292,6 +292,7 @@ int main(){
 		}
 		
 		val = numToCharRGB(getKnobsValue(mem_base));
+		printf("%d %d %d\n", val[0], val[1], val[2]);
 		index += getIndexIncrement(lastVal, (int)val[0]);
 		
 		if(index<0) index = (5+index);
@@ -307,6 +308,7 @@ int main(){
 			printf("Broadcasting...\n");
 			broadcastMe(socket);
 			milisLast = time(NULL);
+			printf("EOL\n");
 		}
 		
 		clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
