@@ -209,8 +209,8 @@ void broadcastMe(int socket){
 	int h = broadcast(socket, (void*)head, sizeof(MessageHead));
 	int b = broadcast(socket, (void*)message, sizeof(InfoMessage));
 	
-	if(h&b) printf("[OK] broadcasted sucessfully");
-	else printf("[ERROR] Not broadcasted");
+	if(h&b) printf("[OK] broadcasted sucessfully\n");
+	else printf("[ERROR] Not broadcasted\n");
 }
 
 int init(){

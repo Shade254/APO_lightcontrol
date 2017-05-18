@@ -43,7 +43,8 @@ char* printInfoMessage(MessageHead* head, InfoMessage* message){
 	char* str = calloc(sizeof(char), 80); 
 	char* w = numToCharRGB(message->wallsRGB);
 	char* c = numToCharRGB(message->ceilingRGB);
-	sprintf(str, "ALC: %d\nPROTOCOL: %d\nTYPE: %d\nRGB_WALL: %d(%c-%c-%c)\nRGB_CEILING: %d(%c-%c-%c)\nTEXT: %s\n\n\nIMAGE: %s"
+	printf("First rgb %d \n", w[0]);
+	sprintf(str, "ALC: %d\nPROTOCOL: %d\nTYPE: %d\nRGB_WALL: %d (%c-%c-%c)\nRGB_CEILING: %d (%c-%c-%c)\nTEXT: %s\n\n\nIMAGE: %s"
 				, head->ALC1, head->protocol,
 				head->type, message->wallsRGB, w[0],w[1], w[2], message->ceilingRGB,
 				c[0], c[1], c[2], message->text, (char*)message->image);
