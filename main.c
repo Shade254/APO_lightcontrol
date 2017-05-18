@@ -214,20 +214,16 @@ void broadcastMe(int socket){
 }
 
 int init(){
-	printf("a\n");
 	int socket = initCommunication();
 	if(socket == 0) return 0;
-	printf("a\n");
 	lcd_base = initScreen();
 	mem_base = initMemBase();
-	printf("a\n");
 	if(lcd_base == NULL || mem_base == NULL) return 0;
 	thisCeiling = calloc(3, sizeof(char));
 	thisWalls = calloc(3, sizeof(char));
-	printf("a\n");
 	thisText = "Ahoj, ja Borat!";
-	thisImage = calloc(256, sizeof(int16_t));
-	printf("a\n");
+	
+	thisImage = malloc(sizeof(mario));
 	if(thisCeiling == NULL || thisWalls == NULL || thisImage == NULL)
 		return 0;
 	memcpy(thisImage, mario, sizeof(mario));
