@@ -8,7 +8,7 @@
 #define PROTOCOL 0x0001000
 #define TYPE 0
 
-InfoMessage* createInfoMessage(unsigned char* wallRGB, unsigned char* ceilingRGB, char* text, char* image){
+InfoMessage* createInfoMessage(unsigned char* wallRGB, unsigned char* ceilingRGB, char* text, int16_t* image){
 	InfoMessage* info = malloc(sizeof(InfoMessage));
 	
 	info->ceilingRGB = charToNumRGB(ceilingRGB);
@@ -18,7 +18,7 @@ InfoMessage* createInfoMessage(unsigned char* wallRGB, unsigned char* ceilingRGB
 	memcpy(info->text, text, 16);
 	
 	if(image==NULL) image = calloc(512, sizeof(char));
-	memcpy(info->text, text, 512);
+	memcpy(info->image, image, 512);
 	
 	return info;
 }

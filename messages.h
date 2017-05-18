@@ -5,7 +5,7 @@ typedef struct {
 	uint32_t ceilingRGB;
 	uint32_t wallsRGB;
 	char text[16];
-	char image[512];
+	int16_t image[256];
 } InfoMessage;
 
 typedef struct {
@@ -19,7 +19,7 @@ typedef struct {
 	int16_t ceilingRGB[3];
 } EditMessage;
 
-InfoMessage* createInfoMessage(unsigned char* wallRGB, unsigned char* ceilingRGB, char* text, char* image);
+InfoMessage* createInfoMessage(unsigned char* wallRGB, unsigned char* ceilingRGB, char* text, int16_t* image);
 
 char* printEditMessage(MessageHead* head, EditMessage* message);
 
