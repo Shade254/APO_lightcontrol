@@ -206,10 +206,10 @@ void broadcastMe(int socket){
 	printInfoMessage(head, message);
 	int h = broadcast(socket, (void*)head, sizeof(MessageHead));
 	int b = broadcast(socket, (void*)message, sizeof(InfoMessage));
-	free(head);
-	free(message);
 	if(h&b) printf("\n[OK] broadcasted sucessfully\n\n\n");
 	else printf("[ERROR] Not broadcasted\n");
+	free(head);
+	free(message);
 }
 
 int init(){
