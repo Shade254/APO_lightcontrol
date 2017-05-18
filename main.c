@@ -34,10 +34,15 @@
 
 struct timespec loop_delay = {.tv_sec = 1, .tv_nsec = 1000 * 1000 * 1000};
 
-unsigned char* thisWalls = {21, 22, 23};
-unsigned char* thisCeiling = {0, 255, 0};
-char* thisText = "crib...";
-int16_t* thisImage = {0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xF800,0xF800,0xF800,0xF800,0xF800,0xF800,0xF800,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,
+unsigned char* mem_base;
+unsigned char* lcd_base;
+int socket;
+unsigned char* thisWalls;
+unsigned char* thisCeiling;
+char* thisText;
+int16_t* thisImage;
+
+int16_t* mario = {0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xF800,0xF800,0xF800,0xF800,0xF800,0xF800,0xF800,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,
  0xFFFF,0xFFFF,0xFFFF,0xF800,0xF800,0xF800,0xF800,0xF800,0xF800,0xF800,0xF800,0xF800,0xF800,0xF800,0xFFFF,0xFFFF,
  0xFFFF,0xFFFF,0xFFFF,0x79E0,0x79E0,0x79E0,0xFDEF,0xFDEF,0xFDEF,0xFDEF,0x0000,0xFDEF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,
  0xFFFF,0xFFFF,0x79E0,0xFDEF,0x79E0,0xFDEF,0xFDEF,0xFDEF,0xFDEF,0xFDEF,0x0000,0xFDEF,0xFDEF,0xFDEF,0xFFFF,0xFFFF,
@@ -209,12 +214,28 @@ void broadcastMe(int socket){
 	else printf("[ERROR] Not broadcasted");
 }
 
+int init(){
+	socket = initCommunication();
+	if(socket == 0) return 0;
+	lcd_base = initScreen();
+	mem_base = initMemBase();
+	if(lcd_base == NULL || mem_base == NULL) return 0;
+	thisCeiling = calloc(3, sizeof(char));
+	thisWalls = calloc(3, sizeof(char));
+	thisText = "Ahoj, ja Borat!";
+	thisImage = calloc(256, sizeof(int16_t));
+	if(thisCeiling == NULL || thisWalls == NULL || thisImage == NULL)
+		return 0;
+	memcpy(thisImage, mario, 512);
+	return 1;
+}
+
 int main(){
-	int socket = initCommunication();
+	if(init == 0){
+		printf("Error in init\n");
+		exit(1);
+	}
 	unsigned long milisLast;
-	
-	unsigned char* lcd_base = initScreen();
-	unsigned char* mem_base = initMemBase();
 	
 	char* address = malloc(16*sizeof(char));
 	char* pom = calloc(30, sizeof(char));
