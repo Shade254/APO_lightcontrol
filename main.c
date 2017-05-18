@@ -221,22 +221,31 @@ int init(){
 	thisWalls = calloc(3, sizeof(char));
 	thisText = "Ahoj, ja Borat!";
 	
-	printf("%ul\n", sizeof(mario));
+	thisWalls[0] = 12;
+	thisWalls[1] = 14;
+	thisWalls[2] = 122;
+	
+	
+	thisCeiling[0] = 0;
+	thisCeiling[1] = 255;
+	thisCeiling[2] = 16;
+	
 	thisImage = malloc(512);
 	
 	if(thisCeiling == NULL || thisWalls == NULL || thisImage == NULL)
 		return 0;
 	
 	memcpy(thisImage, mario, 512);
-	printf("a\n");
 	return socket;
 }
 
 int main(){
 	int socket = init();
 	if(socket == 0){
-		printf("[ERROR] Init failed");
+		printf("[ERROR] Init failed\n");
 		exit(1);
+	} else{
+		printf("[OK] Init\n");
 	}
 	
 	unsigned long milisLast;

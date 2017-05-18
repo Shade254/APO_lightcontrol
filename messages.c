@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "messages.h"
+#include "utils.h"
 
 #define ALC 0x0000001
 #define PROTOCOL 0x0001000
@@ -41,13 +42,15 @@ MessageHead* getMessageHead(int type){
 
 char* printInfoMessage(MessageHead* head, InfoMessage* message){
 	char* str = calloc(sizeof(char), 80); 
+	
 	char* w = numToCharRGB(message->wallsRGB);
 	char* c = numToCharRGB(message->ceilingRGB);
-	printf(str, "ALC: %d\nPROTOCOL: %d\nTYPE: %d\nRGB_WALL: %d (%c-%c-%c)\nRGB_CEILING: %d (%c-%c-%c)\nTEXT: %s\n\n\nIMAGE: %s"
+	
+	printf("ALC: %d\nPROTOCOL: %d\nTYPE: %d\nRGB_WALL: %d (%d-%d-%d)\nRGB_CEILING: %d (%c-%c-%c)\nTEXT: %s\n\n\nIMAGE: %s"
 				, head->ALC1, head->protocol,
 				head->type, message->wallsRGB, w[0],w[1], w[2], message->ceilingRGB,
 				c[0], c[1], c[2], message->text, (char*)message->image);
-	sprintf(str, "ALC: %d\nPROTOCOL: %d\nTYPE: %d\nRGB_WALL: %d (%c-%c-%c)\nRGB_CEILING: %d (%c-%c-%c)\nTEXT: %s\n\n\nIMAGE: %s"
+	sprintf(str, "ALC: %d\nPROTOCOL: %d\nTYPE: %d\nRGB_WALL: %d (%d-%d-%d)\nRGB_CEILING: %d (%c-%c-%c)\nTEXT: %s\n\n\nIMAGE: %s"
 				, head->ALC1, head->protocol,
 				head->type, message->wallsRGB, w[0],w[1], w[2], message->ceilingRGB,
 				c[0], c[1], c[2], message->text, (char*)message->image);
