@@ -269,6 +269,8 @@ int main(){
 			printf("Broadcasting...\n");
 			broadcastMe(socket);
 			milisLast = time(NULL);
+		} else{
+			printf("Diff: %ul\n", (time(NULL)-milisLast));
 		}
 		clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
 	}
