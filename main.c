@@ -206,7 +206,8 @@ void broadcastMe(int socket){
 	printInfoMessage(head, message);
 	int h = broadcast(socket, (void*)head, sizeof(MessageHead));
 	int b = broadcast(socket, (void*)message, sizeof(InfoMessage));
-	
+	free(head);
+	free(message);
 	if(h&b) printf("\n[OK] broadcasted sucessfully\n\n\n");
 	else printf("[ERROR] Not broadcasted\n");
 }
@@ -250,7 +251,6 @@ int main(){
 	
 	unsigned long milisLast;
 	
-	char* address = malloc(16*sizeof(char));
 	char* pom = calloc(30, sizeof(char));
 	
 	const char* a[5];
@@ -272,19 +272,19 @@ int main(){
 	
 	repaintScreen(lcd_base, img);
 	line++;
-	address = "127.0.0.1";
 	
 	int index = 0;
 	unsigned char* val = numToCharRGB(getKnobsValue(mem_base));
 	int lastVal = (int)val[0];
 	free(img);
+	free(val);
 	milisLast = time(NULL);
 	
 	while(1){
 		uint32_t knobs = getKnobsValue(mem_base);
 		int* buttons = getButtonValue(knobs);
 		if(buttons[1]){
-			runSettings(address, a[index], mem_base, lcd_base, socket);
+			runSettings("127.0.0.1", a[index], mem_base, lcd_base, socket);
 		} 
 		
 		if(buttons[0]){
@@ -297,12 +297,12 @@ int main(){
 		
 		if(index<0) index = (5+index);
 		index = index%5;
-		
+		printf("index = %d\n", index);
 		lastVal = (int)val[0];
-		
 		img = createMenuScreen(a, 5, index);
 		repaintScreen(lcd_base, img);
 		free(img);
+		free(val);
 		
 		if((time(NULL) - milisLast) >= 1){
 			printf("Broadcasting...\n");
