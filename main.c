@@ -303,6 +303,7 @@ int main(){
 		repaintScreen(lcd_base, img);
 		free(img);
 		free(val);
+		free(buttons);
 		
 		if((time(NULL) - milisLast) >= 1){
 			printf("Broadcasting...\n");
