@@ -145,6 +145,10 @@ InfoMessage* getBroadcasters(int socket, int numOfMessages){
 			incoming[length] = message;
 			length++;
 	}
+	for(int i = 0;i<numOfMessages;i++){
+		printf("%s\n", ips[i]);
+	}
+	
 	int *uniq = getUnique(ips, numOfMessages);
 	int sum = 0;
 	
