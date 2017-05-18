@@ -90,6 +90,7 @@ int broadcast(int SOCKET, void* bytes, int length){
 void* receiveBytes(int SOCKET, int length, char* address){
 	
 	struct sockaddr_storage sender;
+	
 	void* buffer = malloc(length * sizeof(char));
 		
 	unsigned int fromlen = sizeof(sender);
