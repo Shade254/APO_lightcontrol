@@ -202,9 +202,7 @@ InfoMessage* getBroadcasters(int socket, int numOfMessages){
 
 void broadcastMe(int socket){
 	MessageHead* head = getMessageHead(0);
-	printf("Head created\n");
 	InfoMessage* message = createInfoMessage(thisWalls, thisCeiling, thisText, thisImage);
-	printf("Message created(%s)\n", message->text);
 	printf("%s\n", printInfoMessage(head, message));
 	int h = broadcast(socket, (void*)head, sizeof(MessageHead));
 	int b = broadcast(socket, (void*)message, sizeof(InfoMessage));
