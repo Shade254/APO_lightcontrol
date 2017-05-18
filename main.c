@@ -313,7 +313,6 @@ int main(){
 		
 		clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
 	}
-	free(img);
 	
 	return 0;
 }
