@@ -36,7 +36,6 @@ struct timespec loop_delay = {.tv_sec = 1, .tv_nsec = 1000 * 1000 * 1000};
 
 unsigned char* mem_base;
 unsigned char* lcd_base;
-int socket;
 unsigned char* thisWalls;
 unsigned char* thisCeiling;
 char* thisText;
@@ -205,7 +204,7 @@ void broadcastMe(int socket){
 	MessageHead* head = getMessageHead(0);
 	printf("Head created\n");
 	InfoMessage* message = createInfoMessage(thisWalls, thisCeiling, thisText, thisImage);
-	printf("Message created\n");
+	printf("Message created(%s)\n", message->text);
 	printf("%s\n", printInfoMessage(head, message));
 	int h = broadcast(socket, (void*)head, sizeof(MessageHead));
 	int b = broadcast(socket, (void*)message, sizeof(InfoMessage));
@@ -215,7 +214,7 @@ void broadcastMe(int socket){
 }
 
 int init(){
-	socket = initCommunication();
+	int socket = initCommunication();
 	if(socket == 0) return 0;
 	lcd_base = initScreen();
 	mem_base = initMemBase();
@@ -226,13 +225,14 @@ int init(){
 	thisImage = calloc(256, sizeof(int16_t));
 	if(thisCeiling == NULL || thisWalls == NULL || thisImage == NULL)
 		return 0;
-	memcpy(thisImage, mario, 512);
-	return 1;
+	memcpy(thisImage, mario, sizeof(mario));
+	return socket;
 }
 
 int main(){
-	if(init == 0){
-		printf("Error in init\n");
+	int socket = init();
+	if(socket == 0){
+		printf("[ERROR] Init failed");
 		exit(1);
 	}
 	unsigned long milisLast;
