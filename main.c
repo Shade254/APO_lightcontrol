@@ -223,10 +223,13 @@ int init(){
 	thisWalls = calloc(3, sizeof(char));
 	thisText = "Ahoj, ja Borat!";
 	
-	thisImage = malloc(sizeof(mario));
+	printf("%ul\n", sizeof(mario));
+	thisImage = malloc(512);
+	
 	if(thisCeiling == NULL || thisWalls == NULL || thisImage == NULL)
 		return 0;
-	memcpy(thisImage, mario, sizeof(mario));
+	
+	memcpy(thisImage, mario, 512);
 	printf("a\n");
 	return socket;
 }
