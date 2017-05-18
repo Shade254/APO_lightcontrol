@@ -265,12 +265,10 @@ int main(){
 		repaintScreen(lcd_base, img);
 		free(img);
 		
-		if((time(NULL) - milisLast)/1000 >= 1){
+		if((time(NULL) - milisLast) >= 1){
 			printf("Broadcasting...\n");
 			broadcastMe(socket);
 			milisLast = time(NULL);
-		} else{
-			printf("Diff: %ul\n", (time(NULL)-milisLast));
 		}
 		clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
 	}
