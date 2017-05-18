@@ -18,6 +18,7 @@
 #include "messages.h"
 #include "control.h"
 #include "screen.h"
+#include "utils.h"
 
 
 #define DIM_X 480
@@ -70,6 +71,7 @@ void runSettings(char* ip, char* text, unsigned char* mem_base, unsigned char* l
 	char* title = calloc(50, sizeof(char));
 	sprintf(title, "Settings of %s\n on adress %s", text, ip);
 	char arrow[2] = {16,0};
+	
 	unsigned char wallRGB[3] = {0, 0, 0};
 	unsigned char ceilingRGB[3] = {0, 0, 0};
 	int flag = 0;
@@ -122,10 +124,10 @@ void runSettings(char* ip, char* text, unsigned char* mem_base, unsigned char* l
 	}
 }
 
-InfoMessage* getBroadcasters(int socket){
+InfoMessage* getBroadcasters(int socket, int numOfMessages){
 	int length = 0;
-	InfoMessage** incoming = calloc(10, sizeof(InfoMessage*));
-	char** ips = calloc(10, sizeof(char*));
+	InfoMessage** incoming = calloc(numOfMessages, sizeof(InfoMessage*));
+	char** ips = calloc(numOfMessages, sizeof(char*));
 	void* cur = (void*)incoming;
 	
 	printf("Getting...");
@@ -143,42 +145,47 @@ InfoMessage* getBroadcasters(int socket){
 			incoming[length] = message;
 			length++;
 	}
+	int *uniq = getUnique(ips, numOfMessages);
+	int sum = 0;
 	
-	printf("--------------------------\n");
-	
-	for(int i = 0; i<length;i++){
-		printf("Adress: %s\n", ips[i]);
-		printf("Text: %s\n", incoming[i]->text);
+	for(int i = 0;i<numOfMessages;i++){
+			printf("%d\n", uniq[i]);
+			if(uniq[i]){
+				sum++;
+			}
 	}
 	
-	return incoming;
-}
-
-int getIndexIncrement(int lastVal, int curVal){
-	if(lastVal != curVal){
-		if(abs(curVal-lastVal) > 250){
-			if(curVal>lastVal) return -1;
-			if(lastVal>curVal) return +1;
-		} else{
-			if(curVal>lastVal) return +1;
-			if(lastVal>curVal) return -1;
+	char** response = calloc(sum, sizeof(InfoMessage*));
+	cur = (void*) response; 
+	for(int i = 0; i < numOfMessages;i++){
+		if(uniq[i]){
+			cur = ips[i];
+			cur += sizeof(char*);
 		}
 	}
-	return 0;
+	
+	for(int i = 0; i < sum;i++){
+		printf("%s\n", response[i]);
+	}
+	
+	free(incoming);
+	return response;
 }
 
 int main(){
 	int socket = initCommunication();
-	unsigned char* lcd_base = initScreen();
-	unsigned char* mem_base = initMemBase();
+	
+	//unsigned char* lcd_base = initScreen();
+	//unsigned char* mem_base = initMemBase();
 	
 	char* address = malloc(16*sizeof(char));
 	char* pom = calloc(30, sizeof(char));
+	
 	const char* a[5];
 	a[0] = "ahoj";
 	a[1] = "lidi";
-	a[2] = "jak";
-	a[3] = "se";
+	a[2] = "ahoj";
+	a[3] = "ahoj";
 	a[4] = "mate";
 	
 	Image* img;
@@ -191,14 +198,14 @@ int main(){
 		exit(1);
 	}
 	
-	repaintScreen(lcd_base, img);
+	//repaintScreen(lcd_base, img);
 	line++;
-	address = "127.0.0.1";
+	/*address = "127.0.0.1";
 	
 	int index = 0;
 	unsigned char* val = numToCharRGB(getKnobsValue(mem_base));
 	int lastVal = (int)val[0];
-	//free(img);
+	free(img);
 	
 	while(0){
 		uint32_t knobs = getKnobsValue(mem_base);
@@ -223,10 +230,8 @@ int main(){
 		repaintScreen(lcd_base, img);
 		free(img);
 		clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
-	}
-		
-	getBroadcasters(socket);
-	
+	}*/
+	getBroadcasters(socket, 5);
 	free(img);
 	
 	return 0;

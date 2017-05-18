@@ -28,8 +28,4 @@ char* printInfoMessage(MessageHead* head, InfoMessage* message);
 MessageHead* getHead(int type);
 
 EditMessage* createEditMessage(unsigned char* walls, unsigned char* ceiling);
-
-uint32_t charToNumRGB(unsigned char* RGB);
-
-unsigned char* numToCharRGB(uint32_t RGB);
 #endif
