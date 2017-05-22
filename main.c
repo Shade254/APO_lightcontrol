@@ -173,13 +173,16 @@ int main(){
 			free(labels);
 			printf("Researching area\n");
 			info = getBroadcasters(socket, 4);
+			printf("a");
 			labels = calloc(info->size, sizeof(char*));
-			
+			printf("a");			
 			for(int i = 0;i<info->size;i++){
 					labels[i] = info->messages[i]->text;
 			}
+			printf("a");
 			lastResearch = time(NULL);
 			free(img);
+			printf("a");
 		}
 		
 		
