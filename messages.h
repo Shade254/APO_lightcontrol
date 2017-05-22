@@ -21,11 +21,11 @@ typedef struct {
 
 InfoMessage* createInfoMessage(unsigned char* wallRGB, unsigned char* ceilingRGB, char* text, int16_t* image);
 
-char* printEditMessage(MessageHead* head, EditMessage* message);
+void printEditMessage(MessageHead* head, EditMessage* message);
 
-char* printInfoMessage(MessageHead* head, InfoMessage* message);
+void printInfoMessage(MessageHead* head, InfoMessage* message);
 
-MessageHead* getHead(int type);
+MessageHead* createHead(int type);
 
 EditMessage* createEditMessage(unsigned char* walls, unsigned char* ceiling);
 #endif

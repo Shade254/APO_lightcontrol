@@ -32,7 +32,7 @@ EditMessage* createEditMessage(unsigned char* walls, unsigned char* ceiling){
 	return m;
 }
 
-MessageHead* getMessageHead(int type){
+MessageHead* createMessageHead(int type){
 	MessageHead* head = malloc(sizeof(MessageHead));
 	head->ALC1 = ALC;
 	head->protocol = PROTOCOL;
@@ -40,37 +40,28 @@ MessageHead* getMessageHead(int type){
 	return head;
 }
 
-char* printInfoMessage(MessageHead* head, InfoMessage* message){
-	char* str = calloc(sizeof(char), 80); 
-	
-	char* w = numToCharRGB(message->wallsRGB);
-	char* c = numToCharRGB(message->ceilingRGB);
+void printInfoMessage(MessageHead* head, InfoMessage* message){
+	unsigned char* w = numToCharRGB(message->wallsRGB);
+	unsigned char* c = numToCharRGB(message->ceilingRGB);
 	
 	printf("ALC: %d\nPROTOCOL: %d\nTYPE: %d\nRGB_WALL: %d (%d-%d-%d)\nRGB_CEILING: %d (%d-%d-%d)\nTEXT: %s\n\n\nIMAGE: %s"
 				, head->ALC1, head->protocol,
 				head->type, message->wallsRGB, w[0],w[1], w[2], message->ceilingRGB,
 				c[0], c[1], c[2], message->text, (char*)message->image);
-	sprintf(str, "ALC: %d\nPROTOCOL: %d\nTYPE: %d\nRGB_WALL: %d (%d-%d-%d)\nRGB_CEILING: %d (%c-%c-%c)\nTEXT: %s\n\n\nIMAGE: %s"
-				, head->ALC1, head->protocol,
-				head->type, message->wallsRGB, w[0],w[1], w[2], message->ceilingRGB,
-				c[0], c[1], c[2], message->text, (char*)message->image);
-	return str;	
 }
 
-char* printEditMessage(MessageHead* head, EditMessage* message){
+void printEditMessage(MessageHead* head, EditMessage* message){
 	int16_t w[3];
 	int16_t c[3];
 	
 	for(int i = 0;i<3;i++){
-		w[i] = (unsigned int)message->wallsRGB[i];
-		c[i] = (unsigned int)message->ceilingRGB[i];
+		w[i] = message->wallsRGB[i];
+		c[i] = message->ceilingRGB[i];
 	}
 	
-	char* str = calloc(sizeof(char), 80); 
-	sprintf(str, "ALC: %d\nPROTOCOL: %d\nTYPE: %d\nRGB_WALL: %d %d %d\nRGB_CEILING: %d %d %d"
+	printf("ALC: %d\nPROTOCOL: %d\nTYPE: %d\nRGB_WALL: %d %d %d\nRGB_CEILING: %d %d %d"
 				, head->ALC1, head->protocol,
 				head->type, w[0], w[1], w[2], 
 				c[0], c[1], c[2]);
-	return str;
 }
 

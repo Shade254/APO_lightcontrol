@@ -10,8 +10,8 @@
 #include <string.h>
 #include "netcom.h"
 
-#define SEND_PORT 1234 
-#define BIND_PORT 5555
+#define SEND_PORT 55555
+#define BIND_PORT 1234
 
 int initCommunication(){
 	struct sockaddr_in bindaddr;
@@ -61,6 +61,7 @@ int sendBytes(int SOCKET, void* bytes, char* ip, int length){
 	receiverInfo.sin_addr.s_addr = inet_addr(ip);
 	
 	if (sendto(SOCKET, bytes, length, 0, (struct sockaddr*)&receiverInfo, sizeof(receiverInfo)) == -1){
+		perror("not send: ");
 		return 0;
 	}
 	
@@ -89,13 +90,16 @@ int broadcast(int SOCKET, void* bytes, int length){
 void* receiveBytes(int SOCKET, int length, char* address){
 	
 	struct sockaddr_storage sender;
+	
 	void* buffer = malloc(length * sizeof(char));
 		
 	unsigned int fromlen = sizeof(sender);
 	
-	
-	recvfrom(SOCKET, buffer, sizeof(buffer), 0, (struct sockaddr*)&sender, &fromlen);
-	
+	int sum = 0;
+		while(sum < length){
+			sum += recvfrom(SOCKET, buffer, length-sum, 0, (struct sockaddr*)&sender, &fromlen);
+			printf("%d/%d received\n", sum, length);
+		}
 	inet_ntop(sender.ss_family, &(((struct sockaddr_in *)&sender)->sin_addr),address, INET_ADDRSTRLEN);
 	
 	return buffer;

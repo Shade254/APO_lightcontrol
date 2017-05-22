@@ -65,6 +65,14 @@ Image* setPixel(Image* img, int x, int y, int r, int g, int b){
 }
 
 
+Image* paintPixel(Image* img, int x, int y, int16_t color){
+	unsigned r = (color & 0xF800) >> 8;      
+	unsigned g = (color & 0x07E0) >> 3;      
+	unsigned b = (color & 0x1F) << 3; 
+	return setPixel(img, x, y, r, g, b);
+}
+
+
 Image* writeText(Image* img, int posx, int posy, char* text){
 	int length = strlen(text);
 	int x = posx;	

@@ -59,47 +59,6 @@ int16_t mario[256] = {0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xF800,0xF800,0xF800,0xF800,0x
  0xFFFF,0xFFFF,0x79E0,0x79E0,0x79E0,0x79E0,0x79E0,0xFFFF,0xFFFF,0x79E0,0x79E0,0x79E0,0x79E0,0x79E0,0xFFFF,0xFFFF,
 };
 
-void runSettings(char* ip, char* text, unsigned char* mem_base, unsigned char* lcd_base, int socket){
-	unsigned char wallRGB[3] = {0, 0, 0};
-	unsigned char ceilingRGB[3] = {0, 0, 0};
-	int flag = 0;
-	unsigned char* oldValues;
-	uint32_t new = getKnobsValue(mem_base);
-	oldValues = numToCharRGB(new);
-	
-	while(1){
-		new = getKnobsValue(mem_base);
-		
-		int* b = getButtonValue(new);
-		if(b[0]) break;
-		if(b[1]) flag = !flag;
-		if(b[2]){
-			 sendEdit(socket, wallRGB, ceilingRGB, ip);
-			 break;
-		 }
-		 
-		
-		unsigned char* newValues = numToCharRGB(new);
-		
-		for(int i = 0;i<3;i++){
-			if(flag){
-				wallRGB[i] += getIndexIncrement(oldValues[i], newValues[i]);
-			}
-			else{
-				ceilingRGB[i] += getIndexIncrement(oldValues[i], newValues[i]);
-			}
-		}
-		
-		Image* img = createDetailScreen(ip, text, flag, wallRGB, ceilingRGB);
-		repaintScreen(lcd_base, img);
-		free(img);
-		free(oldValues);
-		oldValues = newValues;
-
-		clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
-	}
-}
-
 int init(int mzapo){
 	int socket = initCommunication();
 	if(socket == 0) return 0;
@@ -133,7 +92,6 @@ int init(int mzapo){
 }
 
 int main(){
-	
 	int socket = init(MZAPO);
 	if(socket == 0){
 		printf("[ERROR] Init failed\n");
@@ -141,78 +99,16 @@ int main(){
 	} else{
 		printf("[OK] Init\n");
 	}
+	long lastMilis = time(NULL);
 	
-	unsigned long lastBroadcast = 0;
-	unsigned long lastResearch = 0;
-	
-	Image* img;
-	
-	if(socket != 0){
-		printf("[OK] Socket valid!\n");
-	} else{
-		printf("[ERROR] Socket cannot be inicialized!\n");
-		exit(1);
-	}
-	
-	int index = 0;
-	unsigned char* val = numToCharRGB(getKnobsValue(mem_base));
-	int lastVal = (int)val[0];
-	free(val);
-
-	AreaInfo* info = calloc(1, sizeof(AreaInfo));
-	char** labels = calloc(1, sizeof(char*));
-	
-	while(MZAPO){
-		uint32_t knobs = getKnobsValue(mem_base);
-		int* buttons = getButtonValue(knobs);
-			
-		if((time(NULL)-lastResearch) >= 10){
-			img = createResearchScreen();
-			repaintScreen(lcd_base, img);
-			free(info);
-			free(labels);
-			printf("Researching area\n");
-			info = getBroadcasters(socket, 4);
-			labels = calloc(info->size, sizeof(char*));
-			
-			for(int i = 0;i<info->size;i++){
-					labels[i] = info->messages[i]->text;
-			}
-			lastResearch = time(NULL);
-			free(img);
-		}
-		
-		
-		if(buttons[1]){
-			runSettings(info->ips[index], info->messages[index]->text, mem_base, lcd_base, socket);
-		} 
-		
-		if(buttons[0]){
-			exit(1);
-		}
-		
-		val = numToCharRGB(getKnobsValue(mem_base));
-		index += getIndexIncrement(lastVal, (int)val[0]);
-		
-		if(index<0) index = (5+index);
-		index = index%5;
-		lastVal = (int)val[0];
-		
-		img = createMenuScreen(labels, 5, index);
-		repaintScreen(lcd_base, img);
-		
-		free(img);
-		free(val);
-		free(buttons);
-		
-		if((time(NULL)-lastBroadcast) >= 1){
+	while(1){
+		if((time(NULL) - lastMilis) >= 1){
 			printf("Broadcasting...");
-			broadcastInfo(socket, thisWalls, thisCeiling, thisText, thisImage);
-			lastBroadcast = time(NULL);
+			printf("%d/n", broadcastInfo(socket, thisWalls, thisCeiling, thisText, thisImage));
+			lastMilis = time(NULL);
 		}
-		
-		clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
 	}
+	
 	
 	return 0;
 }
