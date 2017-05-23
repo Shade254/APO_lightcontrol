@@ -10,7 +10,7 @@
 #include <string.h>
 #include "netcom.h"
 
-#define SEND_PORT 6666 
+#define SEND_PORT 55555
 #define BIND_PORT 55555
 
 int initCommunication(){

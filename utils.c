@@ -68,7 +68,6 @@ int* getUnique(char** ips, int length){
 		returnVal[unique[i]] = 1;
 	}		
 	
-	free(unique);
 	return returnVal;
 }
 

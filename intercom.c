@@ -20,7 +20,6 @@ int broadcastInfo(int socket, unsigned char* walls, unsigned char* ceiling, char
 	
 	free(data);
 	free(message);
-	free(head);
 
 	return r;
 }
@@ -60,22 +59,28 @@ AreaInfo* getBroadcasters(int socket, int numOfMessages){
 			MessageHead* head = (MessageHead*) bytes;
 			void* pom = (void*)(head + 1);
 			InfoMessage* message = (InfoMessage*)pom;
-			
+			printf("From address %s:\n", ips[i]);
+			printInfoMessage(head, message);
 			incomMes[i] = message;
 			incomHead[i] = head;
 	}
 	
+	char** labels = calloc(numOfMessages, sizeof(char*));
+	for(int i = 0;i<numOfMessages;i++){
+		labels[i] = incomMes[i]->text;
+	}
 	
-	int *uniq = getUnique(ips, numOfMessages);
+	
+	int *uniq = getUnique(labels, numOfMessages);
 	int sum = 0;
 	for(int i = 0;i<numOfMessages;i++){
+		printf("\n%d\n", uniq[i]);
 			if(uniq[i]){
 				sum++;
 			}
 	}
 	
-	
-	printf("-------------------------\n");
+	printf("------------I got %d unique messages-------------\n", sum);
 	
 	AreaInfo* area = calloc(1, sizeof(AreaInfo));
 	area->size = sum;
@@ -96,14 +101,9 @@ AreaInfo* getBroadcasters(int socket, int numOfMessages){
 			printInfoMessage(area->heads[counter], area->messages[counter]);
 			counter++;
 		} else {
-			free(ips[i]);
 			free(incomHead[i]);
 		}
 	}
-	
-	free(incomHead);
-	free(incomMes);
-	free(ips);
 	
 	return area;
 }

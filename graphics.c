@@ -3,6 +3,7 @@
 #include <inttypes.h>
 #include "graphics.h"
 #include "imgwrite.h"
+#include "messages.h"
 
 #define DIM_X 480
 #define DIM_Y 320
@@ -47,10 +48,10 @@ Image* createMenuScreen(char** strings, int num, int index){
 	return img;
 }
 
-Image* createDetailScreen(char* ip, char* name, int index, unsigned char* wallsRGB, unsigned char* ceilingRGB){
+Image* createDetailScreen(char* ip, int index, unsigned char* wallsRGB, unsigned char* ceilingRGB, InfoMessage* message){
 	char* pom = calloc(60, sizeof(char));
 	char* title = calloc(55, sizeof(char));
-	sprintf(title, "Settings of %s\n on adress %s", name, ip);
+	sprintf(title, "Settings of %s\n on adress %s", message->text, ip);
 	char arrow[2] = {16,0};
 
 	sprintf(pom, "Walls - R:%d G:%d B:%d", wallsRGB[0], wallsRGB[1], wallsRGB[2]);
@@ -64,7 +65,17 @@ Image* createDetailScreen(char* ip, char* name, int index, unsigned char* wallsR
 	} else {
 		writeText(img, 0, 80, arrow);
 	}
-
+	
+	int posx = 200;
+	int posy = 200;
+	for(int y = 0;y<16;y++){
+		for(int x = 0;x<16;x++){
+			paintPixel(img, posx+x, posy+y, message->image[(y*16 + x)]);
+		}
+	}
+	
+	
+	
 	return img;
 }
 

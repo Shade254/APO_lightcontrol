@@ -31,6 +31,8 @@
 #define INCREMENT_TYPE 1
 #define SET_TYPE 2
 #define MZAPO 0
+#define CAST_TIME 1
+#define RESEARCH_TIME 10
 
 struct timespec loop_delay = {.tv_sec = 1, .tv_nsec = 1000 * 1000 * 1000};
 
@@ -59,7 +61,7 @@ int16_t mario[256] = {0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xF800,0xF800,0xF800,0xF800,0x
  0xFFFF,0xFFFF,0x79E0,0x79E0,0x79E0,0x79E0,0x79E0,0xFFFF,0xFFFF,0x79E0,0x79E0,0x79E0,0x79E0,0x79E0,0xFFFF,0xFFFF,
 };
 
-void runSettings(char* ip, char* text, unsigned char* mem_base, unsigned char* lcd_base, int socket){
+void runSettings(char* ip, unsigned char* mem_base, unsigned char* lcd_base, int socket, InfoMessage* message){
 	unsigned char wallRGB[3] = {0, 0, 0};
 	unsigned char ceilingRGB[3] = {0, 0, 0};
 	int flag = 0;
@@ -90,7 +92,7 @@ void runSettings(char* ip, char* text, unsigned char* mem_base, unsigned char* l
 			}
 		}
 		
-		Image* img = createDetailScreen(ip, text, flag, wallRGB, ceilingRGB);
+		Image* img = createDetailScreen(ip, flag, wallRGB, ceilingRGB, message);
 		repaintScreen(lcd_base, img);
 		free(img);
 		free(oldValues);
@@ -166,28 +168,22 @@ int main(){
 		uint32_t knobs = getKnobsValue(mem_base);
 		int* buttons = getButtonValue(knobs);
 			
-		if((time(NULL)-lastResearch) >= 10){
+			
+		if((time(NULL)-lastResearch) >= RESEARCH_TIME){
 			img = createResearchScreen();
 			repaintScreen(lcd_base, img);
-			free(info);
-			free(labels);
 			printf("Researching area\n");
-			info = getBroadcasters(socket, 4);
-			printf("a");
-			labels = calloc(info->size, sizeof(char*));
-			printf("a");			
+			info = getBroadcasters(socket, 12);
+			labels = calloc(info->size, sizeof(char*));			
 			for(int i = 0;i<info->size;i++){
 					labels[i] = info->messages[i]->text;
 			}
-			printf("a");
-			lastResearch = time(NULL);
-			free(img);
-			printf("a");
-		}
+			lastResearch = time(NULL);			
+		}	
 		
 		
 		if(buttons[1]){
-			runSettings(info->ips[index], info->messages[index]->text, mem_base, lcd_base, socket);
+			runSettings(info->ips[index], mem_base, lcd_base, socket, info->messages[index]);
 		} 
 		
 		if(buttons[0]){
@@ -201,17 +197,20 @@ int main(){
 		index = index%5;
 		lastVal = (int)val[0];
 		
-		img = createMenuScreen(labels, 5, index);
+		img = createMenuScreen(labels, info->size, index);
 		repaintScreen(lcd_base, img);
 		
 		free(img);
 		free(val);
 		free(buttons);
 		
-		if((time(NULL)-lastBroadcast) >= 1){
-			printf("Broadcasting...");
-			broadcastInfo(socket, thisWalls, thisCeiling, thisText, thisImage);
-			lastBroadcast = time(NULL);
+		if((time(NULL) - lastBroadcast) >= CAST_TIME){
+			printf("Broadcasting...\n");
+			int b = broadcastInfo(socket, thisWalls, thisCeiling, thisText, thisImage);
+			printf("%d\n", b);
+			if(b == 1){
+				lastBroadcast = time(NULL);
+			}
 		}
 		
 		clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
