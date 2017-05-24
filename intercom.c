@@ -31,9 +31,9 @@ int sendEdit(int socket, unsigned char* walls, unsigned char* ceiling, char* ip)
 	memcpy(data, head, 12);
 	void* pom = ((MessageHead*)data + 1);
 	memcpy(pom, message, sizeof(EditMessage));
-	
+	printf("-------------------SENDING---------------\n");
 	printEditMessage((MessageHead*)data, (EditMessage*)pom);
-
+	printf("-----------------------------------------\n");
 	int r = sendBytes(socket, data, ip,sizeof(MessageHead) + sizeof(InfoMessage));
 	
 	free(data);

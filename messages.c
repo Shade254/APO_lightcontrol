@@ -59,7 +59,7 @@ void printEditMessage(MessageHead* head, EditMessage* message){
 		c[i] = message->ceilingRGB[i];
 	}
 	
-	printf("ALC: %d\nPROTOCOL: %d\nTYPE: %d\nRGB_WALL: %d %d %d\nRGB_CEILING: %d %d %d"
+	printf("ALC: %d\nPROTOCOL: %d\nTYPE: %d\nRGB_WALL: %d %d %d\nRGB_CEILING: %d %d %d\n"
 				, head->ALC1, head->protocol,
 				head->type, w[0], w[1], w[2], 
 				c[0], c[1], c[2]);

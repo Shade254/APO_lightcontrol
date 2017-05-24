@@ -30,7 +30,7 @@
 #define TEXT_B 255
 #define INCREMENT_TYPE 1
 #define SET_TYPE 2
-#define MZAPO 0
+#define MZAPO 1
 #define CAST_TIME 1
 #define RESEARCH_TIME 10
 
@@ -84,7 +84,7 @@ void runSettings(char* ip, unsigned char* mem_base, unsigned char* lcd_base, int
 		unsigned char* newValues = numToCharRGB(new);
 		
 		for(int i = 0;i<3;i++){
-			if(flag){
+			if(!flag){
 				wallRGB[i] += getIndexIncrement(oldValues[i], newValues[i]);
 			}
 			else{
@@ -114,7 +114,7 @@ int init(int mzapo){
 	
 	thisCeiling = calloc(3, sizeof(char));
 	thisWalls = calloc(3, sizeof(char));
-	thisText = "Ahoj, ja Borat!";
+	thisText = "...---...";
 	
 	thisWalls[0] = 12;
 	thisWalls[1] = 14;
@@ -194,7 +194,7 @@ int main(){
 		index += getIndexIncrement(lastVal, (int)val[0]);
 		
 		if(index<0) index = (5+index);
-		index = index%5;
+		index = index%info->size;
 		lastVal = (int)val[0];
 		
 		img = createMenuScreen(labels, info->size, index);
