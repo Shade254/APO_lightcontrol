@@ -11,7 +11,7 @@ typedef struct{
 
 int broadcastInfo(int socket, unsigned char* walls, unsigned char* ceiling, char* text, int16_t* image);
 
-int sendEdit(int socket, unsigned char* walls, unsigned char* ceiling, char* ip);
+int sendEdit(int socket, unsigned char* walls, unsigned char* ceiling, char* ip, int type);
 
 AreaInfo* getBroadcasters(int socket, int numOfMessages);
 

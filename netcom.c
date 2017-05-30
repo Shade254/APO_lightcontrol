@@ -59,7 +59,6 @@ int sendBytes(int SOCKET, void* bytes, char* ip, int length){
 	receiverInfo.sin_family = AF_INET;
 	receiverInfo.sin_port = htons(SEND_PORT);
 	receiverInfo.sin_addr.s_addr = inet_addr(ip);
-	
 	if (sendto(SOCKET, bytes, length, 0, (struct sockaddr*)&receiverInfo, sizeof(receiverInfo)) == -1){
 		perror("not send: ");
 		return 0;

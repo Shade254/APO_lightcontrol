@@ -22,6 +22,9 @@
 
 #define DIM_X 480
 #define DIM_Y 320
+#define RED 0
+#define GREEN 1
+#define BLUE 2
 #define BASE_R 0
 #define BASE_G 0
 #define BASE_B 0
@@ -30,9 +33,10 @@
 #define TEXT_B 255
 #define INCREMENT_TYPE 1
 #define SET_TYPE 2
-#define MZAPO 1
+#define MZAPO 0
 #define CAST_TIME 1
 #define RESEARCH_TIME 10
+#define SAMPLE_SIZE 7
 
 struct timespec loop_delay = {.tv_sec = 1, .tv_nsec = 1000 * 1000 * 1000};
 
@@ -41,6 +45,11 @@ unsigned char* lcd_base;
 unsigned char* thisWalls;
 unsigned char* thisCeiling;
 char* thisText;
+
+unsigned long lastBroadcast = 0;
+unsigned long lastResearch = 0;
+
+
 int16_t* thisImage;
 
 int16_t mario[256] = {0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xF800,0xF800,0xF800,0xF800,0xF800,0xF800,0xF800,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,
@@ -66,6 +75,9 @@ void runSettings(char* ip, unsigned char* mem_base, unsigned char* lcd_base, int
 	unsigned char ceilingRGB[3] = {0, 0, 0};
 	int flag = 0;
 	unsigned char* oldValues;
+	unsigned char* newValues;
+	int state = 0;
+	int changed = 0;
 	uint32_t new = getKnobsValue(mem_base);
 	oldValues = numToCharRGB(new);
 	
@@ -73,31 +85,71 @@ void runSettings(char* ip, unsigned char* mem_base, unsigned char* lcd_base, int
 		new = getKnobsValue(mem_base);
 		
 		int* b = getButtonValue(new);
-		if(b[0]) break;
-		if(b[1]) flag = !flag;
-		if(b[2]){
-			 sendEdit(socket, wallRGB, ceilingRGB, ip);
-			 break;
-		 }
-		 
+		if(b[RED]) break;
+		if(b[GREEN]) flag = !flag;
+		if(b[BLUE]){
+			 state++;
+			 state=state%3;
+		}
 		
-		unsigned char* newValues = numToCharRGB(new);
-		
-		for(int i = 0;i<3;i++){
-			if(!flag){
-				wallRGB[i] += getIndexIncrement(oldValues[i], newValues[i]);
+		if(state == 2){
+			for(int i = 0;i<3;i++){
+				wallRGB[i] = 0;
+				ceilingRGB[i] = 0;
 			}
+			sendEdit(socket, wallRGB, ceilingRGB, ip, 2);
+			changed = 0;
+		} else{
+			newValues = numToCharRGB(new);
+			for(int i = 0;i<3;i++){
+				int increment = getIndexIncrement(oldValues[i], newValues[i]);
+				if(increment!=0) changed=1;
+			
+				if(!flag){
+					wallRGB[i] += increment;
+				}
+				else{
+					ceilingRGB[i] += increment;
+				}
+			}
+		} 
+		
+		if(changed){
+			if(state == 1){
+				unsigned char* pomWall = calloc(3, sizeof(char));
+				unsigned char* pomCeiling = calloc(3, sizeof(char));
+				unsigned char* origWall = numToCharRGB(message->wallsRGB);
+				unsigned char* origCeiling = numToCharRGB(message->ceilingRGB);
+				
+				for(int i = 0;i<3;i++){
+					pomWall[i] = wallRGB[i] - origWall[i];
+					pomCeiling[i] = ceilingRGB[i] - origCeiling[i];
+				}
+				sendEdit(socket, pomWall, pomCeiling, ip, 1);
+				message->wallsRGB = charToNumRGB(wallRGB);
+				message->ceilingRGB = charToNumRGB(ceilingRGB);
+			}
+			
 			else{
-				ceilingRGB[i] += getIndexIncrement(oldValues[i], newValues[i]);
+				sendEdit(socket, wallRGB, ceilingRGB, ip, 2);
 			}
 		}
 		
 		Image* img = createDetailScreen(ip, flag, wallRGB, ceilingRGB, message);
+		
+		if(state == 2){
+			writeText(img, 185, 220, "Lights OFF");
+		} else if(state == 1){
+			writeText(img, 170, 220, "Increment format");
+		} else if(state == 0){
+			writeText(img, 160, 220, "Direct set format");
+		}
+		
 		repaintScreen(lcd_base, img);
 		free(img);
 		free(oldValues);
 		oldValues = newValues;
-
+		broadcastMe(socket);
 		clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
 	}
 }
@@ -114,16 +166,16 @@ int init(int mzapo){
 	
 	thisCeiling = calloc(3, sizeof(char));
 	thisWalls = calloc(3, sizeof(char));
-	thisText = "...---...";
+	thisText = "shade";
 	
-	thisWalls[0] = 12;
-	thisWalls[1] = 14;
-	thisWalls[2] = 122;
+	thisWalls[RED] = 12;
+	thisWalls[GREEN] = 14;
+	thisWalls[BLUE] = 122;
 	
 	
-	thisCeiling[0] = 0;
-	thisCeiling[1] = 255;
-	thisCeiling[2] = 16;
+	thisCeiling[RED] = 0;
+	thisCeiling[GREEN] = 255;
+	thisCeiling[BLUE] = 16;
 	
 	thisImage = malloc(512);
 	
@@ -134,20 +186,37 @@ int init(int mzapo){
 	return socket;
 }
 
+void broadcastMe(int socket){
+	if((time(NULL) - lastBroadcast) >= CAST_TIME){
+		printf("Broadcasting...\n");
+		int b = broadcastInfo(socket, thisWalls, thisCeiling, thisText, thisImage);
+		printf("%d\n", b);
+		if(b == 1){
+			lastBroadcast = time(NULL);
+		}
+	}
+}
+
+
 int main(){
 	
 	int socket = init(MZAPO);
+	Image* img;
+	unsigned char* inputValues;
+	int lastInput;
+	int index = 0;
+	
+	AreaInfo* areaInfo = calloc(1, sizeof(AreaInfo));
+	char** labels = calloc(1, sizeof(char*));
+	
+	
 	if(socket == 0){
 		printf("[ERROR] Init failed\n");
 		exit(1);
 	} else{
 		printf("[OK] Init\n");
 	}
-	
-	unsigned long lastBroadcast = 0;
-	unsigned long lastResearch = 0;
-	
-	Image* img;
+		
 	
 	if(socket != 0){
 		printf("[OK] Socket valid!\n");
@@ -156,13 +225,23 @@ int main(){
 		exit(1);
 	}
 	
-	int index = 0;
-	unsigned char* val = numToCharRGB(getKnobsValue(mem_base));
-	int lastVal = (int)val[0];
-	free(val);
-
-	AreaInfo* info = calloc(1, sizeof(AreaInfo));
-	char** labels = calloc(1, sizeof(char*));
+	
+	if(MZAPO){
+		inputValues = numToCharRGB(getKnobsValue(mem_base));
+		lastInput = (int)inputValues[BLUE];
+		free(inputValues);
+		img = createResearchScreen();
+		repaintScreen(lcd_base, img);
+		areaInfo = getBroadcasters(socket, SAMPLE_SIZE);
+		labels = calloc(areaInfo->size, sizeof(char*));			
+			for(int i = 0;i<areaInfo->size;i++){
+					labels[i] = areaInfo->messages[i]->text;
+			}
+			
+		lastResearch = time(NULL);	
+	}
+	
+	
 	
 	while(MZAPO){
 		uint32_t knobs = getKnobsValue(mem_base);
@@ -170,51 +249,69 @@ int main(){
 			
 			
 		if((time(NULL)-lastResearch) >= RESEARCH_TIME){
-			img = createResearchScreen();
-			repaintScreen(lcd_base, img);
 			printf("Researching area\n");
-			info = getBroadcasters(socket, 12);
-			labels = calloc(info->size, sizeof(char*));			
-			for(int i = 0;i<info->size;i++){
-					labels[i] = info->messages[i]->text;
+			areaInfo = getBroadcasters(socket, SAMPLE_SIZE);
+			labels = calloc(areaInfo->size, sizeof(char*));			
+			for(int i = 0;i<areaInfo->size;i++){
+					labels[i] = areaInfo->messages[i]->text;
 			}
+			
 			lastResearch = time(NULL);			
 		}	
 		
 		
-		if(buttons[1]){
-			runSettings(info->ips[index], mem_base, lcd_base, socket, info->messages[index]);
+		if(buttons[GREEN]){
+			runSettings(areaInfo->ips[index], mem_base, lcd_base, socket, areaInfo->messages[index]);
 		} 
 		
-		if(buttons[0]){
+		if(buttons[RED]){
 			exit(1);
 		}
 		
-		val = numToCharRGB(getKnobsValue(mem_base));
-		index += getIndexIncrement(lastVal, (int)val[0]);
+		inputValues = numToCharRGB(getKnobsValue(mem_base));
+		index += getIndexIncrement(lastInput, (int)inputValues[BLUE]);
 		
 		if(index<0) index = (5+index);
-		index = index%info->size;
-		lastVal = (int)val[0];
+		index = index%areaInfo->size;
+		lastInput = (int)inputValues[BLUE];
 		
-		img = createMenuScreen(labels, info->size, index);
+		img = createMenuScreen(areaInfo, index);
 		repaintScreen(lcd_base, img);
 		
 		free(img);
-		free(val);
+		free(inputValues);
 		free(buttons);
 		
-		if((time(NULL) - lastBroadcast) >= CAST_TIME){
-			printf("Broadcasting...\n");
-			int b = broadcastInfo(socket, thisWalls, thisCeiling, thisText, thisImage);
-			printf("%d\n", b);
-			if(b == 1){
-				lastBroadcast = time(NULL);
-			}
-		}
+		broadcastMe(socket);
 		
 		clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
 	}
+	
+	if(!MZAPO){
+		img = createResearchScreen();
+		showScreen("research.ppm", img);
+		printf("--------------------Getting broadcasters----------------\n");
+		areaInfo = getBroadcasters(socket, 5);
+		printf("--------------------Received----------------\n");
+		for(int i = 0;i<areaInfo->size;i++){
+			printf("%s - %d\n", areaInfo->messages[i]->text, numToCharRGB(areaInfo->messages[i]->wallsRGB)[0]);
+		}
+		areaInfo = sortAreaByName(areaInfo);
+		printf("--------------------Sorted----------------\n");
+		for(int i = 0;i<areaInfo->size;i++){
+			printf("%s - %d\n", areaInfo->messages[i]->text, numToCharRGB(areaInfo->messages[i]->wallsRGB)[0]);
+		}
+		
+		printf("---------------------Painting---------------\n");
+		img = createMenuScreen(areaInfo, 0);
+		showScreen("sorted.ppm", img);
+		img = createDetailScreen(areaInfo->ips[0], 1, numToCharRGB(areaInfo->messages[0]->wallsRGB), numToCharRGB(areaInfo->messages[0]->ceilingRGB), areaInfo->messages[0]);
+		writeText(img, 160, 220, "Direct set format");
+		showScreen("detail.ppm", img);
+	}
+	
+	
+	
 	
 	return 0;
 }

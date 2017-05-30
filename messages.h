@@ -28,4 +28,15 @@ void printInfoMessage(MessageHead* head, InfoMessage* message);
 MessageHead* createHead(int type);
 
 EditMessage* createEditMessage(unsigned char* walls, unsigned char* ceiling);
+
+InfoMessage* netToHostInfo(MessageHead* head, InfoMessage* info);
+
+MessageHead* netToHostHead(MessageHead* head);
+
+EditMessage* hostToNetEdit(MessageHead* head, EditMessage* edit);
+
+InfoMessage* hostToNetInfo(MessageHead *head, InfoMessage *info);
+
+MessageHead* hostToNetHead(MessageHead* head);
+
 #endif

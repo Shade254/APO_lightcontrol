@@ -91,6 +91,7 @@ Image* writeText(Image* img, int posx, int posy, char* text){
 	return img;
 }
 
+
 Image* writeLetter(Image* img, int x, int y, unsigned char c){
 	int offset = ((int)c) * 16;
 	
