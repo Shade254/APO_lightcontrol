@@ -107,7 +107,10 @@ Image* paintIcon(Image* img, int16_t* rgb, int x, int y, int posx, int posy){
 }
 
 Image* createResearchScreen(){
-	char* title = "Loading\n  ...\nLoading\n  ...\nLoading\n  ...\nLoading\n  ...";
-	Image* img = createTextScreen(210, 50,title);
+	Image* img = createBlankScreen(BASE_R, BASE_G, BASE_B);
+	
+	writeText(img, 20, 0, "Available units: ");
+	writeText(img, 190, 280, "Searching area...");
+	
 	return img;
 }

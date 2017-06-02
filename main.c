@@ -20,23 +20,20 @@
 #include "intercom.h"
 
 
-#define DIM_X 480
-#define DIM_Y 320
+#define MZAPO 1
+
 #define RED 0
 #define GREEN 1
 #define BLUE 2
-#define BASE_R 0
-#define BASE_G 0
-#define BASE_B 0
-#define TEXT_R 255
-#define TEXT_G 255
-#define TEXT_B 255
+
 #define INCREMENT_TYPE 1
 #define SET_TYPE 2
-#define MZAPO 0
+
 #define CAST_TIME 1
 #define RESEARCH_TIME 10
-#define SAMPLE_SIZE 7
+
+#define SAMPLE_SIZE 8
+#define START_SAMPLE 3
 
 struct timespec loop_delay = {.tv_sec = 1, .tv_nsec = 1000 * 1000 * 1000};
 
@@ -97,7 +94,7 @@ void runSettings(char* ip, unsigned char* mem_base, unsigned char* lcd_base, int
 				wallRGB[i] = 0;
 				ceilingRGB[i] = 0;
 			}
-			sendEdit(socket, wallRGB, ceilingRGB, ip, 2);
+			sendEdit(socket, wallRGB, ceilingRGB, ip, SET_TYPE);
 			changed = 0;
 		} else{
 			newValues = numToCharRGB(new);
@@ -125,13 +122,13 @@ void runSettings(char* ip, unsigned char* mem_base, unsigned char* lcd_base, int
 					pomWall[i] = wallRGB[i] - origWall[i];
 					pomCeiling[i] = ceilingRGB[i] - origCeiling[i];
 				}
-				sendEdit(socket, pomWall, pomCeiling, ip, 1);
+				sendEdit(socket, pomWall, pomCeiling, ip, INCREMENT_TYPE);
 				message->wallsRGB = charToNumRGB(wallRGB);
 				message->ceilingRGB = charToNumRGB(ceilingRGB);
 			}
 			
 			else{
-				sendEdit(socket, wallRGB, ceilingRGB, ip, 2);
+				sendEdit(socket, wallRGB, ceilingRGB, ip, SET_TYPE);
 			}
 		}
 		
@@ -154,11 +151,11 @@ void runSettings(char* ip, unsigned char* mem_base, unsigned char* lcd_base, int
 	}
 }
 
-int init(int mzapo){
+int init(){
 	int socket = initCommunication();
 	if(socket == 0) return 0;
 	
-	if(mzapo){
+	if(MZAPO){
 		lcd_base = initScreen();
 		mem_base = initMemBase();
 		if(lcd_base == NULL || mem_base == NULL) return 0;
@@ -232,7 +229,7 @@ int main(){
 		free(inputValues);
 		img = createResearchScreen();
 		repaintScreen(lcd_base, img);
-		areaInfo = getBroadcasters(socket, SAMPLE_SIZE);
+		areaInfo = getBroadcasters(socket, START_SAMPLE);
 		labels = calloc(areaInfo->size, sizeof(char*));			
 			for(int i = 0;i<areaInfo->size;i++){
 					labels[i] = areaInfo->messages[i]->text;
@@ -291,12 +288,13 @@ int main(){
 		img = createResearchScreen();
 		showScreen("research.ppm", img);
 		printf("--------------------Getting broadcasters----------------\n");
-		areaInfo = getBroadcasters(socket, 5);
+		areaInfo = getBroadcasters(socket, SAMPLE_SIZE);
 		printf("--------------------Received----------------\n");
 		for(int i = 0;i<areaInfo->size;i++){
 			printf("%s - %d\n", areaInfo->messages[i]->text, numToCharRGB(areaInfo->messages[i]->wallsRGB)[0]);
 		}
 		areaInfo = sortAreaByName(areaInfo);
+		
 		printf("--------------------Sorted----------------\n");
 		for(int i = 0;i<areaInfo->size;i++){
 			printf("%s - %d\n", areaInfo->messages[i]->text, numToCharRGB(areaInfo->messages[i]->wallsRGB)[0]);
@@ -304,9 +302,11 @@ int main(){
 		
 		printf("---------------------Painting---------------\n");
 		img = createMenuScreen(areaInfo, 0);
-		showScreen("sorted.ppm", img);
+		showScreen("area.ppm", img);
+		
 		img = createDetailScreen(areaInfo->ips[0], 1, numToCharRGB(areaInfo->messages[0]->wallsRGB), numToCharRGB(areaInfo->messages[0]->ceilingRGB), areaInfo->messages[0]);
 		writeText(img, 160, 220, "Direct set format");
+		
 		showScreen("detail.ppm", img);
 	}
 	

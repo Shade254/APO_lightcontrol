@@ -15,4 +15,7 @@ int sendEdit(int socket, unsigned char* walls, unsigned char* ceiling, char* ip,
 
 AreaInfo* getBroadcasters(int socket, int numOfMessages);
 
+AreaInfo* sortAreaByName(AreaInfo* area);
+
+
 #endif

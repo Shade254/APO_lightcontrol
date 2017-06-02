@@ -11,4 +11,8 @@ Image* createResearchScreen();
 
 Image* paintIcon(Image* img, int16_t* rgb, int x, int y, int posx, int posy);
 
+Image* paintGraph(Image* img, int posx, int posy, unsigned char* values);
+
+Image* paintBar(Image* img, int posx, int posy, int x, int y, uint32_t rgb);
+
 #endif

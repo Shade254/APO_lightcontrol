@@ -1,6 +1,6 @@
 #ifndef IMGWRITE_H_
 #define IMGWRITE_H_
-
+#include <inttypes.h>
 #define RGB_MAX 255
 
 typedef struct {
@@ -24,6 +24,7 @@ Image* setPixel(Image* img, int x, int y, int r, int g, int b);
 
 Image* writeLetter(Image* img, int x, int y, unsigned char c);
 
+Image* paintPixel(Image* img, int x, int y, int16_t color);
 
 
 #endif
